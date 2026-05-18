@@ -1,0 +1,78 @@
+name: projet-reseau-entreprise
+
+topology:
+  nodes:
+    # --- SÉCURITÉ (FIREWALL OPEN SOURCE) ---
+    ENT-FIREWALL:
+      kind: linux
+      image: alpine:latest
+      # Ces commandes s'exécutent au démarrage pour le transformer en routeur/pare-feu
+      exec:
+        - sysctl -w net.ipv4.ip_forward=1
+        - apk update
+        - apk add iptables
+        - ip addr add 192.168.0.1/30 dev eth1
+        - ip route add 192.168.10.0/24 via 192.168.0.2
+        - ip route add 192.168.20.0/24 via 192.168.0.2
+        - ip route add 192.168.30.0/24 via 192.168.0.2
+        - iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+    # --- CŒUR DE RÉSEAU (SWITCH L3 ARISTA) ---
+    ENT-COR-01:
+      kind: arista_ceos
+      image: ceos:4.30.2
+
+    # --- SERVEURS ---
+    SRV-WEB:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.10.10/24 dev eth1
+        - ip route del default 
+        - ip route add default via 192.168.10.254
+
+    SRV-DNS:
+          kind: linux
+          image: alpine:latest
+          exec:
+            - ip addr add 192.168.10.11/24 dev eth1
+            - ip route del default
+            - ip route add default via 192.168.10.254
+    SRV-VOIP:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.30.10/24 dev eth1
+        - ip route del default
+        - ip route add default via 192.168.30.254
+
+
+    # --- CLIENTS ---
+    CLIENT-PC:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.20.10/24 dev eth1
+        - ip route del default
+        - ip route add default via 192.168.20.254
+
+    CLIENT-PHONE:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.30.11/24 dev eth1
+        - ip route del default
+        - ip route add default via 192.168.30.254
+
+  links:
+    # Interconnexion entre le Pare-feu VyOS (eth1) et le Switch Core Arista (eth1)
+    - endpoints: ["ENT-FIREWALL:eth1", "ENT-COR-01:eth1"]
+
+    # Connexion des serveurs sur le Switch Core
+    - endpoints: ["ENT-COR-01:eth2", "SRV-WEB:eth1"]
+    - endpoints: ["ENT-COR-01:eth3", "SRV-VOIP:eth1"]
+    - endpoints: ["ENT-COR-01:eth4", "SRV-DNS:eth1"]
+
+    # Connexion des postes clients sur le Switch Core
+    - endpoints: ["ENT-COR-01:eth5", "CLIENT-PC:eth1"]
+    - endpoints: ["ENT-COR-01:eth6", "CLIENT-PHONE:eth1"]

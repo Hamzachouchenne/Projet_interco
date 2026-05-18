@@ -1,0 +1,61 @@
+{
+  "freeTextAnnotations": [],
+  "freeShapeAnnotations": [],
+  "trafficRateAnnotations": [],
+  "groupStyleAnnotations": [],
+  "networkNodeAnnotations": [],
+  "nodeAnnotations": [
+    {
+      "id": "ENT-FIREWALL",
+      "position": {
+        "x": 260,
+        "y": 360
+      }
+    },
+    {
+      "id": "ENT-COR-01",
+      "position": {
+        "x": 420,
+        "y": 360
+      }
+    },
+    {
+      "id": "SRV-WEB",
+      "position": {
+        "x": 540,
+        "y": 460
+      }
+    },
+    {
+      "id": "SRV-VOIP",
+      "position": {
+        "x": 400,
+        "y": 180
+      }
+    },
+    {
+      "id": "SRV-DNS",
+      "position": {
+        "x": 400,
+        "y": 520
+      }
+    },
+    {
+      "id": "CLIENT-PC",
+      "position": {
+        "x": 540,
+        "y": 240
+      }
+    },
+    {
+      "id": "CLIENT-PHONE",
+      "position": {
+        "x": 580,
+        "y": 340
+      }
+    }
+  ],
+  "edgeAnnotations": [],
+  "aliasEndpointAnnotations": [],
+  "viewerSettings": {}
+}
