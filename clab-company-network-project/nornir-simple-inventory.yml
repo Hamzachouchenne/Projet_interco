@@ -3,34 +3,34 @@ ENT-COR-01:
     username: admin
     password: admin
     platform: arista_ceos
-    hostname: 172.20.20.5
+    hostname: 172.20.20.9
 CLIENT-PC:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.12
+    hostname: 172.20.20.8
 CLIENT-PHONE:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.7
+    hostname: 172.20.20.13
 ENT-FIREWALL:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.10
+    hostname: 172.20.20.11
 SRV-DNS:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.8
+    hostname: 172.20.20.10
 SRV-VOIP:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.9
+    hostname: 172.20.20.14
 SRV-WEB:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.11
+    hostname: 172.20.20.12

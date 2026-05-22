@@ -46,7 +46,7 @@ topology:
         - ip route del default
         - ip route add default via 192.168.10.254
       binds:
-        - serveur-web/:/var/www/localhost/htdocs/
+        - web-server/:/var/www/localhost/htdocs/
 
     SRV-DNS:
       kind: linux
@@ -56,18 +56,18 @@ topology:
         - ip route del default
         - ip route add default via 192.168.10.254
     SRV-VOIP:
-        kind: linux
-        # Image Docker communautaire populaire et stable pour Asterisk
-        image: andrius/asterisk:latest
-        binds:
-          - ./asterisk-config:/etc/asterisk
-        cmd: sleep infinity
-        exec:
-          - apt-get update
-          - apt-get install -y iproute2
-          - ip addr add 192.168.30.10/24 dev eth1
-          - ip route del default
-          - ip route add default via 192.168.30.254
+      kind: linux
+      # Image Docker communautaire populaire et stable pour Asterisk
+      image: andrius/asterisk:latest
+      binds:
+        - ./asterisk-config:/etc/asterisk
+      cmd: sleep infinity
+      exec:
+        - apt-get update
+        - apt-get install -y iproute2
+        - ip addr add 192.168.30.10/24 dev eth1
+        - ip route del default
+        - ip route add default via 192.168.30.254
 
     # --- CLIENTS ---
     CLIENT-PC:
