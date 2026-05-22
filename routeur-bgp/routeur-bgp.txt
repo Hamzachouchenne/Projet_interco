@@ -1,0 +1,75 @@
+enable
+configure terminal
+
+! =======================================================
+! 0. HOSTNAME ET DOMAIN NAME
+! =======================================================
+hostname R3
+ip domain-name as10.enseeiht.local
+
+! =======================================================
+! 1. INTERFACES PHYSIQUES
+! =======================================================
+! Vers R1 (Interne AS 10)
+interface GigabitEthernet0/0
+ ip address 120.0.0.10 255.255.255.252
+ no shutdown
+ exit
+
+! Vers R2 (Interne AS 10)
+interface GigabitEthernet0/1
+ ip address 120.0.0.6 255.255.255.252
+ no shutdown
+ exit
+
+! Vers AS-11-12-13 (Externe AS eBGP)
+interface GigabitEthernet0/2
+ ip address 10.0.0.10 255.0.0.0
+ no shutdown
+ exit
+
+! =======================================================
+! 2. ROUTAGE INTERNE (OSPF)
+! =======================================================
+router ospf 1
+ network 120.0.0.8 0.0.0.3 area 0
+ network 120.0.0.4 0.0.0.3 area 0
+ redistribute bgp 10 subnets
+ exit
+
+! =======================================================
+! 3. AGREGATION POUR BGP
+! =======================================================
+ip route 120.0.0.0 255.255.240.0 Null0
+
+! =======================================================
+! 4. ROUTAGE EXTERNE (eBGP vers AS 11-12-13)
+! =======================================================
+router bgp 10 
+ ! Connexion eBGP vers AS 11 12 et 13
+ neighbor 10.0.0.11 remote-as 11
+ neighbor 10.0.0.12 remote-as 12
+ neighbor 10.0.0.13 remote-as 13
+
+ ! Annoncer ton bloc officiel /20
+ network 120.0.0.0 mask 255.255.240.0
+ exit
+
+! =======================================================
+! 5. SECURITE & ACCES SSH
+! =======================================================
+! Génération de la clé 2048 bits pour SSH
+crypto key generate rsa
+
+! Création de ton accès admin
+username as10 privilege 15 secret as10password
+ip ssh version 2
+
+! Configuration des lignes virtuelles
+line vty 0 4
+ login local
+ transport input ssh
+ exit
+
+end
+write memory
