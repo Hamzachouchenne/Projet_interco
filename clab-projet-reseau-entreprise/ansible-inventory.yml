@@ -12,18 +12,18 @@ all:
         ansible_password: admin
       hosts:
         clab-projet-reseau-entreprise-ENT-COR-01:
-          ansible_host: 172.20.20.6
+          ansible_host: 172.20.20.5
     linux:
       hosts:
         clab-projet-reseau-entreprise-CLIENT-PC:
-          ansible_host: 172.20.20.8
-        clab-projet-reseau-entreprise-CLIENT-PHONE:
-          ansible_host: 172.20.20.10
-        clab-projet-reseau-entreprise-ENT-FIREWALL:
           ansible_host: 172.20.20.12
-        clab-projet-reseau-entreprise-SRV-DNS:
+        clab-projet-reseau-entreprise-CLIENT-PHONE:
           ansible_host: 172.20.20.7
+        clab-projet-reseau-entreprise-ENT-FIREWALL:
+          ansible_host: 172.20.20.10
+        clab-projet-reseau-entreprise-SRV-DNS:
+          ansible_host: 172.20.20.8
         clab-projet-reseau-entreprise-SRV-VOIP:
-          ansible_host: 172.20.20.11
-        clab-projet-reseau-entreprise-SRV-WEB:
           ansible_host: 172.20.20.9
+        clab-projet-reseau-entreprise-SRV-WEB:
+          ansible_host: 172.20.20.11

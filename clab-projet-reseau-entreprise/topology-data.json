@@ -28,12 +28,14 @@
       "image": "alpine:latest",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.8",
+      "mgmt-ipv4-address": "172.20.20.12",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::8",
+      "mgmt-ipv6-address": "3fff:172:20:20::c",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "ce07122",
         "clab-mgmt-net-bridge": "br-633ce4e0c2fe",
         "clab-node-group": "",
         "clab-node-kind": "linux",
@@ -59,12 +61,14 @@
       "image": "alpine:latest",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.10",
+      "mgmt-ipv4-address": "172.20.20.7",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::a",
+      "mgmt-ipv6-address": "3fff:172:20:20::7",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "ce07122",
         "clab-mgmt-net-bridge": "br-633ce4e0c2fe",
         "clab-node-group": "",
         "clab-node-kind": "linux",
@@ -90,12 +94,14 @@
       "image": "ceos:4.30.2",
       "mgmt-net": "",
       "mgmt-intf": "Management0",
-      "mgmt-ipv4-address": "172.20.20.6",
+      "mgmt-ipv4-address": "172.20.20.5",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::6",
+      "mgmt-ipv6-address": "3fff:172:20:20::5",
       "mgmt-ipv6-prefix-length": 64,
-      "mac-address": "00:1c:73:b7:d7:0a",
+      "mac-address": "00:1c:73:b3:8a:b8",
       "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "ce07122",
         "clab-mgmt-net-bridge": "br-633ce4e0c2fe",
         "clab-node-group": "",
         "clab-node-kind": "arista_ceos",
@@ -121,12 +127,14 @@
       "image": "alpine:latest",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.12",
+      "mgmt-ipv4-address": "172.20.20.10",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::c",
+      "mgmt-ipv6-address": "3fff:172:20:20::a",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "ce07122",
         "clab-mgmt-net-bridge": "br-633ce4e0c2fe",
         "clab-node-group": "",
         "clab-node-kind": "linux",
@@ -152,12 +160,14 @@
       "image": "alpine:latest",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.7",
+      "mgmt-ipv4-address": "172.20.20.8",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::7",
+      "mgmt-ipv6-address": "3fff:172:20:20::8",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "ce07122",
         "clab-mgmt-net-bridge": "br-633ce4e0c2fe",
         "clab-node-group": "",
         "clab-node-kind": "linux",
@@ -180,15 +190,17 @@
       "group": "",
       "labdir": "/home/hamza/Desktop/reseaux/clab-projet-reseau-entreprise/SRV-VOIP",
       "kind": "linux",
-      "image": "alpine:latest",
+      "image": "andrius/asterisk:latest",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.11",
+      "mgmt-ipv4-address": "172.20.20.9",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::b",
+      "mgmt-ipv6-address": "3fff:172:20:20::9",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "ce07122",
         "clab-mgmt-net-bridge": "br-633ce4e0c2fe",
         "clab-node-group": "",
         "clab-node-kind": "linux",
@@ -214,12 +226,14 @@
       "image": "alpine:latest",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.9",
+      "mgmt-ipv4-address": "172.20.20.11",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::9",
+      "mgmt-ipv6-address": "3fff:172:20:20::b",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "ce07122",
         "clab-mgmt-net-bridge": "br-633ce4e0c2fe",
         "clab-node-group": "",
         "clab-node-kind": "linux",
@@ -241,13 +255,13 @@
         "a": {
           "node": "ENT-FIREWALL",
           "interface": "eth1",
-          "mac": "aa:c1:ab:5c:5c:35",
+          "mac": "aa:c1:ab:94:57:20",
           "peer": "z"
         },
         "z": {
           "node": "ENT-COR-01",
           "interface": "eth1",
-          "mac": "aa:c1:ab:d1:8d:00",
+          "mac": "aa:c1:ab:31:dc:bd",
           "peer": "a"
         }
       }
@@ -257,13 +271,13 @@
         "a": {
           "node": "ENT-COR-01",
           "interface": "eth2",
-          "mac": "aa:c1:ab:05:70:a6",
+          "mac": "aa:c1:ab:0f:f5:3d",
           "peer": "z"
         },
         "z": {
           "node": "SRV-WEB",
           "interface": "eth1",
-          "mac": "aa:c1:ab:67:90:86",
+          "mac": "aa:c1:ab:19:ee:e2",
           "peer": "a"
         }
       }
@@ -273,13 +287,13 @@
         "a": {
           "node": "ENT-COR-01",
           "interface": "eth3",
-          "mac": "aa:c1:ab:0b:81:4c",
+          "mac": "aa:c1:ab:cc:05:cd",
           "peer": "z"
         },
         "z": {
           "node": "SRV-VOIP",
           "interface": "eth1",
-          "mac": "aa:c1:ab:61:5f:dd",
+          "mac": "aa:c1:ab:5c:d4:51",
           "peer": "a"
         }
       }
@@ -289,13 +303,13 @@
         "a": {
           "node": "ENT-COR-01",
           "interface": "eth4",
-          "mac": "aa:c1:ab:8c:67:7f",
+          "mac": "aa:c1:ab:88:ef:23",
           "peer": "z"
         },
         "z": {
           "node": "SRV-DNS",
           "interface": "eth1",
-          "mac": "aa:c1:ab:6b:ef:e3",
+          "mac": "aa:c1:ab:48:e9:d0",
           "peer": "a"
         }
       }
@@ -305,13 +319,13 @@
         "a": {
           "node": "ENT-COR-01",
           "interface": "eth5",
-          "mac": "aa:c1:ab:82:64:1f",
+          "mac": "aa:c1:ab:9e:1e:2c",
           "peer": "z"
         },
         "z": {
           "node": "CLIENT-PC",
           "interface": "eth1",
-          "mac": "aa:c1:ab:86:1b:cb",
+          "mac": "aa:c1:ab:e7:00:a3",
           "peer": "a"
         }
       }
@@ -321,13 +335,13 @@
         "a": {
           "node": "ENT-COR-01",
           "interface": "eth6",
-          "mac": "aa:c1:ab:02:1d:ae",
+          "mac": "aa:c1:ab:c2:f0:c8",
           "peer": "z"
         },
         "z": {
           "node": "CLIENT-PHONE",
           "interface": "eth1",
-          "mac": "aa:c1:ab:f4:d8:87",
+          "mac": "aa:c1:ab:35:3e:da",
           "peer": "a"
         }
       }
