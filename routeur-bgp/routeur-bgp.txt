@@ -16,15 +16,14 @@ interface GigabitEthernet0/0
 
 ! Vers R3 (Interne)
 interface GigabitEthernet0/1
- ip address 120.0.0.10 255.255.255.252
+ ip address 120.0.0.14 255.255.255.252
  no shutdown
  exit
 
 
 ! -- ROUTAGE INTERNE (OSPF) --
-router ospf 1
- network 120.0.0.8 0.0.0.3 area 0
- network 120.0.0.4 0.0.0.3 area 0
+router ospf 10
+ network 120.0.0.12 0.0.0.3 area 0
  redistribute bgp 10 subnets
  exit
 
@@ -34,7 +33,10 @@ ip route 120.0.0.0 255.255.240.0 Null0
 
 
 ! -- ROUTAGE EXTERNE (eBGP) --
-router bgp 10 
+router bgp 10
+ ! Identité BGP
+ bgp router-id 120.0.0.14
+
  ! Connexion eBGP vers AS 11 12 et 13
  neighbor 10.0.0.11 remote-as 11
  neighbor 10.0.0.12 remote-as 12
