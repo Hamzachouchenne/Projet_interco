@@ -29,8 +29,9 @@ interface GigabitEthernet0/1
 
 ! -- ROUTAGE INTERNE (OSPF) --
 router ospf 10
- network 120.0.0.12 0.0.0.3 area 0
+ router-id 120.0.15.4
  network 120.0.15.4 0.0.0.0 area 0
+ network 120.0.0.12 0.0.0.3 area 0
  redistribute bgp 10 subnets
  exit
 
