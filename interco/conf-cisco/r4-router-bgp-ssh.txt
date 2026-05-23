@@ -1,6 +1,7 @@
 enable
 configure terminal
 
+
 ! -- SSH --
 ! Génération de la clé 2048 bits pour SSH
 crypto key generate rsa
