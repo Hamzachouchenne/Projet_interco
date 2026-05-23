@@ -46,5 +46,6 @@ router bgp 10
  network 120.0.0.0 mask 255.255.240.0
  exit
 
+
 end
 write memory
