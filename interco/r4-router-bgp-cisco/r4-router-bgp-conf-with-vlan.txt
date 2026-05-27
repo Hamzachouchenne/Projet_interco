@@ -71,10 +71,12 @@ router bgp 10
  ! Remote AS 11
  neighbor 10.0.0.11 remote-as 11
  neighbor 10.0.0.11 update-source Loopback1
+ neighbor 10.0.0.11 ebgp-multihop 2
 
  ! Remote AS 12
  neighbor 10.0.0.12 remote-as 12
  neighbor 10.0.0.12 update-source Loopback1
+ neighbor 10.0.0.12 ebgp-multihop 2
 
  ! Annoncer notre bloc réseau public
  network 120.0.0.0 mask 255.255.240.0
