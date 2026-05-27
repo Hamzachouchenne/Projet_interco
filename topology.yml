@@ -12,21 +12,35 @@ topology:
         - apk update
         - apk add iptables
         - ip addr add 192.168.0.1/30 dev eth1
+        - ip addr add 120.0.0.102/30 dev eth2
         - ip route add 192.168.10.0/24 via 192.168.0.2
         - ip route add 192.168.20.0/24 via 192.168.0.2
         - ip route add 192.168.30.0/24 via 192.168.0.2
-        - iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+        - ip route del default
+        - ip route add default via 120.0.0.101
+
+        # NAT (Masquerade)
+        - iptables -t nat -A POSTROUTING -o eth2 -j MASQUERADE
+
+        # Politique stricte : on bloque tout ce qui traverse par défaut
         - iptables -P FORWARD DROP
+
+        # Autoriser les paquets de retour (vital pour recevoir les réponses DNS/Ping)
         - iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
-        - iptables -A FORWARD -i eth1 -o eth0 -p tcp --dport 443 -s 120.0.0.0/20 -j ACCEPT
-        - iptables -A FORWARD -i eth1 -o eth0 -p tcp --dport 80 -s 120.0.0.0/20 -j ACCEPT
-        - iptables -A FORWARD -i eth1 -o eth0 -p tcp --dport 53 -s 120.0.0.0/20 -j ACCEPT
-        - iptables -A FORWARD -i eth1 -o eth0 -p udp --dport 53 -s 120.0.0.0/20 -j ACCEPT
-        - iptables -A FORWARD -i eth1 -o eth0 -p tcp --dport 5060 -s 120.0.0.0/20 -j ACCEPT
-        - iptables -A FORWARD -i eth1 -o eth0 -p udp --dport 5060 -s 120.0.0.0/20 -j ACCEPT
-        - iptables -A FORWARD -i eth1 -o eth0 -p tcp --dport 5061 -s 120.0.0.0/20 -j ACCEPT
-        - iptables -A FORWARD -i eth1 -o eth0 -p udp --dport 5061 -s 120.0.0.0/20 -j ACCEPT
-        - iptables -A FORWARD -i eth1 -o eth0 -p udp --dport 16384:32767 -s 120.0.0.0/20 -j ACCEPT
+
+        # ---------------------------------------------------------
+        # AUTORISATIONS STRICTES : UNIQUEMENT VERS LE SERVEUR DNS
+        # ---------------------------------------------------------
+
+        # 1. Autoriser le Ping (ICMP) SEULEMENT vers l'IP du serveur DNS
+        - iptables -A FORWARD -i eth1 -o eth2 -p icmp -s 192.168.0.0/16 -d 120.0.100.1 -j ACCEPT
+
+        # 2. Autoriser les requêtes DNS (UDP et TCP port 53) SEULEMENT vers l'IP du serveur DNS
+        - iptables -A FORWARD -i eth1 -o eth2 -p udp --dport 53 -s 192.168.0.0/16 -d 120.0.100.1 -j ACCEPT
+        - iptables -A FORWARD -i eth1 -o eth2 -p tcp --dport 53 -s 192.168.0.0/16 -d 120.0.100.1 -j ACCEPT
+
+        - iptables -A FORWARD -i eth1 -o eth2 -p tcp --dport 80 -s 192.168.0.0/16 -j ACCEPT
+        - iptables -A FORWARD -i eth1 -o eth2 -p tcp --dport 443 -s 192.168.0.0/16 -j ACCEPT
 
     # --- CŒUR DE RÉSEAU (SWITCH L3 ARISTA) ---
     ENT-COR-01:
@@ -48,13 +62,6 @@ topology:
       binds:
         - web-server/:/var/www/localhost/htdocs/
 
-    SRV-DNS:
-      kind: linux
-      image: alpine:latest
-      exec:
-        - ip addr add 192.168.10.11/24 dev eth1
-        - ip route del default
-        - ip route add default via 192.168.10.254
     SRV-VOIP:
       kind: linux
       # Image Docker communautaire populaire et stable pour Asterisk
@@ -68,6 +75,8 @@ topology:
         - ip addr add 192.168.30.10/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.30.254
+        - asterisk -rx "core reload"
+        - asterisk
 
     # --- CLIENTS ---
     CLIENT-PC:
@@ -81,13 +90,61 @@ topology:
         - ip route del default
         - ip route add default via 192.168.20.254
 
-    CLIENT-PHONE:
+    CLIENT-PHONE1:
       kind: linux
       image: alpine:latest
+      binds:
+        - ./asterisk-client/phone1:/root/.baresip
       exec:
+        - apk update
+        - apk add baresip --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
         - ip addr add 192.168.30.11/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.30.254
+        #- baresip -f /root/.baresip
+
+    CLIENT-PHONE2:
+      kind: linux
+      image: alpine:latest
+      binds:
+        - ./asterisk-client/phone2:/root/.baresip
+      exec:
+        - apk update
+        - apk add baresip --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
+        - ip addr add 192.168.30.21/24 dev eth1
+        - ip route del default
+        - ip route add default via 192.168.30.254
+        #- baresip -f /root/.baresip
+
+    ##########################################################################
+    ##########################################################################
+    # AS routers and additional hosts
+    AS-R1:
+      kind: arista_ceos
+      image: ceos:4.30.2
+
+    AS-R2:
+      kind: arista_ceos
+      image: ceos:4.30.2
+
+    AS-R3:
+      kind: arista_ceos
+      image: ceos:4.30.2
+
+    SRV-DNS:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 120.0.100.1/24 dev eth1
+        - ip route del default
+        - ip route add default via 120.0.100.254
+
+    PARTICULIER-ENT:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - apk update
+        - apk add curl
 
   links:
     # Interconnexion entre le Pare-feu VyOS (eth1) et le Switch Core Arista (eth1)
@@ -96,8 +153,17 @@ topology:
     # Connexion des serveurs sur le Switch Core
     - endpoints: ["ENT-COR-01:eth2", "SRV-WEB:eth1"]
     - endpoints: ["ENT-COR-01:eth3", "SRV-VOIP:eth1"]
-    - endpoints: ["ENT-COR-01:eth4", "SRV-DNS:eth1"]
 
     # Connexion des postes clients sur le Switch Core
     - endpoints: ["ENT-COR-01:eth5", "CLIENT-PC:eth1"]
-    - endpoints: ["ENT-COR-01:eth6", "CLIENT-PHONE:eth1"]
+    - endpoints: ["ENT-COR-01:eth6", "CLIENT-PHONE1:eth1"]
+    - endpoints: ["ENT-COR-01:eth7", "CLIENT-PHONE2:eth1"]
+
+    # Interconnexion entre les routeurs AS et le Switch Core
+    - endpoints: ["AS-R1:eth1", "ENT-FIREWALL:eth2"]
+    - endpoints: ["AS-R1:eth2", "AS-R2:eth1"]
+    - endpoints: ["AS-R1:eth3", "AS-R3:eth1"]
+    #- endpoints: ["AS-R1:eth4", "macvlan:"]
+    - endpoints: ["AS-R2:eth2", "AS-R3:eth2"]
+    - endpoints: ["AS-R3:eth3", "SRV-DNS:eth1"]
+    - endpoints: ["AS-R2:eth3", "PARTICULIER-ENT:eth1"]
