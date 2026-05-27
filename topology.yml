@@ -2,52 +2,26 @@ name: company-network-project
 
 topology:
   nodes:
-    # --- SÉCURITÉ (FIREWALL OPEN SOURCE) ---
+
+    # ================================================================
+    # SITE PRIMAIRE
+    # ================================================================
+
+    # --- FIREWALL + VPN (PKI et PSK auto-générés au 1er démarrage) ---
     ENT-SITE-PRIM-FIREWALL:
       kind: linux
       image: alpine:latest
-      # Ces commandes s'exécutent au démarrage pour le transformer en routeur/pare-feu
+      binds:
+        - ./site-primaire-firewall/:/etc/openvpn/
       exec:
-        - sysctl -w net.ipv4.ip_forward=1
-        - apk update
-        - apk add iptables
-        - ip addr add 192.168.0.1/30 dev eth1
-        - ip addr add 120.0.0.102/30 dev eth2
-        - ip route add 192.168.10.0/24 via 192.168.0.2
-        - ip route add 192.168.20.0/24 via 192.168.0.2
-        - ip route add 192.168.30.0/24 via 192.168.0.2
-        - ip route del default
-        - ip route add default via 120.0.0.101
+        - sh /etc/openvpn/firewall-init.sh
 
-        # NAT (Masquerade)
-        - iptables -t nat -A POSTROUTING -o eth2 -j MASQUERADE
-
-        # Politique stricte : on bloque tout ce qui traverse par défaut
-        - iptables -P FORWARD DROP
-
-        # Autoriser les paquets de retour (vital pour recevoir les réponses DNS/Ping)
-        - iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
-
-        # ---------------------------------------------------------
-        # AUTORISATIONS STRICTES : UNIQUEMENT VERS LE SERVEUR DNS
-        # ---------------------------------------------------------
-
-        # 1. Autoriser le Ping (ICMP) SEULEMENT vers l'IP du serveur DNS
-        - iptables -A FORWARD -i eth1 -o eth2 -p icmp -s 192.168.0.0/16 -d 120.0.100.1 -j ACCEPT
-
-        # 2. Autoriser les requêtes DNS (UDP et TCP port 53) SEULEMENT vers l'IP du serveur DNS
-        - iptables -A FORWARD -i eth1 -o eth2 -p udp --dport 53 -s 192.168.0.0/16 -d 120.0.100.1 -j ACCEPT
-        - iptables -A FORWARD -i eth1 -o eth2 -p tcp --dport 53 -s 192.168.0.0/16 -d 120.0.100.1 -j ACCEPT
-
-        - iptables -A FORWARD -i eth1 -o eth2 -p tcp --dport 80 -s 192.168.0.0/16 -j ACCEPT
-        - iptables -A FORWARD -i eth1 -o eth2 -p tcp --dport 443 -s 192.168.0.0/16 -j ACCEPT
-
-    # --- CŒUR DE RÉSEAU (SWITCH L3 ARISTA) ---
+    # --- SWITCH CŒUR DE RÉSEAU (L3 Arista) ---
     ENT-SITE-PRIM-COR-01:
       kind: arista_ceos
       image: ceos:4.30.2
 
-    # --- SERVEURS ---
+    # --- SERVEURS (IPs statiques) ---
     ENT-SITE-PRIM-SRV-WEB:
       kind: linux
       image: alpine:latest
@@ -62,9 +36,16 @@ topology:
       binds:
         - web-server/:/var/www/localhost/htdocs/
 
+    ENT-SITE-PRIM-SRV-DNS:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.10.11/24 dev eth1
+        - ip route del default
+        - ip route add default via 192.168.10.254
+
     ENT-SITE-PRIM-SRV-VOIP:
       kind: linux
-      # Image Docker communautaire populaire et stable pour Asterisk
       image: andrius/asterisk:latest
       binds:
         - ./asterisk-config:/etc/asterisk
@@ -78,17 +59,23 @@ topology:
         - asterisk -rx "core reload"
         - asterisk
 
-    # --- CLIENTS ---
+    # --- DHCP : sert VLAN 20 (Clients) et VLAN 30 (VoIP) ---
+    ENT-SITE-PRIM-SRV-DHCP:
+      kind: linux
+      image: alpine:latest
+      binds:
+        - ./site-primaire-dhcp/:/etc/dhcp/
+      exec:
+        - sh /etc/dhcp/dhcp-init.sh
+
+    # --- CLIENTS (IP via DHCP) ---
     ENT-SITE-PRIM-CLIENT-PC-01:
       kind: linux
       image: alpine:latest
-
       exec:
         - apk update
         - apk add curl
-        - ip addr add 192.168.20.10/24 dev eth1
-        - ip route del default
-        - ip route add default via 192.168.20.254
+        - sh -c "for i in 1 2 3 4 5 6 7 8 9 10; do udhcpc -i eth1 -n -t 5 && break; sleep 5; done"
 
     ENT-SITE-PRIM-CLIENT-PHONE-01:
       kind: linux
@@ -98,9 +85,7 @@ topology:
       exec:
         - apk update
         - apk add baresip --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
-        - ip addr add 192.168.30.11/24 dev eth1
-        - ip route del default
-        - ip route add default via 192.168.30.254
+        - sh -c "for i in 1 2 3 4 5 6 7 8 9 10; do udhcpc -i eth1 -n -t 5 && break; sleep 5; done"
         #- baresip -f /root/.baresip
 
     ENT-SITE-PRIM-CLIENT-PHONE-02:
@@ -111,14 +96,47 @@ topology:
       exec:
         - apk update
         - apk add baresip --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
-        - ip addr add 192.168.30.21/24 dev eth1
-        - ip route del default
-        - ip route add default via 192.168.30.254
+        - sh -c "for i in 1 2 3 4 5 6 7 8 9 10; do udhcpc -i eth1 -n -t 5 && break; sleep 5; done"
         #- baresip -f /root/.baresip
 
-    ##########################################################################
-    ##########################################################################
+    # ================================================================
+    # SITE SECONDAIRE
+    # ================================================================
+
+    # # --- FIREWALL + VPN client (attend la PSK du site primaire) + DNS forwarder ---
+    # ENT-SITE-SECO-FIREWALL:
+    #   kind: linux
+    #   image: alpine:latest
+    #   binds:
+    #     - ./site-secondaire-firewall/:/etc/openvpn/
+    #   exec:
+    #     - sh /etc/openvpn/firewall-init.sh
+
+    # # --- COEUR DE RESEAU SITE SECONDAIRE ---
+    # ENT-SITE-SECO-COR-01:
+    #   kind: arista_ceos
+    #   image: ceos:4.30.2
+
+    # # --- DHCP : sert le LAN 192.168.50.0/24 ---
+    # ENT-SITE-SECO-SRV-DHCP:
+    #   kind: linux
+    #   image: alpine:latest
+    #   binds:
+    #     - ./site-secondaire-dhcp/:/etc/dhcp/
+    #   exec:
+    #     - sh /etc/dhcp/dhcp-init.sh
+
+    # # --- CLIENT (IP via DHCP) ---
+    # ENT-SITE-SECO-CLIENT-PC-01:
+    #   kind: linux
+    #   image: alpine:latest
+    #   exec:
+    #     - sh -c "for i in 1 2 3 4 5 6 7 8 9 10; do udhcpc -i eth1 -n -t 5 && break; sleep 5; done"
+
+    # ================================================================
     # AS routers and additional hosts
+    # ================================================================
+
     AS-R1:
       kind: arista_ceos
       image: ceos:4.30.2
@@ -161,9 +179,12 @@ topology:
     - endpoints: ["ENT-SITE-PRIM-COR-01:eth3", "ENT-SITE-PRIM-SRV-VOIP:eth1"]
 
     # Connexion des postes clients sur le Switch Core
+    - endpoints: ["ENT-SITE-PRIM-COR-01:eth4", "ENT-SITE-PRIM-SRV-DNS:eth1"]
     - endpoints: ["ENT-SITE-PRIM-COR-01:eth5", "ENT-SITE-PRIM-CLIENT-PC-01:eth1"]
     - endpoints: ["ENT-SITE-PRIM-COR-01:eth6", "ENT-SITE-PRIM-CLIENT-PHONE-01:eth1"]
     - endpoints: ["ENT-SITE-PRIM-COR-01:eth7", "ENT-SITE-PRIM-CLIENT-PHONE-02:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-COR-01:eth8", "ENT-SITE-PRIM-SRV-DHCP:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-COR-01:eth9", "ENT-SITE-PRIM-SRV-DHCP:eth2"]
 
     # Interconnexion entre les routeurs AS et le Switch Core
     - endpoints: ["AS-R1:eth1", "ENT-SITE-PRIM-FIREWALL:eth2"]
