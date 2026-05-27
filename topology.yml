@@ -3,7 +3,7 @@ name: company-network-project
 topology:
   nodes:
     # --- SÉCURITÉ (FIREWALL OPEN SOURCE) ---
-    ENT-FIREWALL:
+    ENT-SITE-PRIM-FIREWALL:
       kind: linux
       image: alpine:latest
       # Ces commandes s'exécutent au démarrage pour le transformer en routeur/pare-feu
@@ -43,12 +43,12 @@ topology:
         - iptables -A FORWARD -i eth1 -o eth2 -p tcp --dport 443 -s 192.168.0.0/16 -j ACCEPT
 
     # --- CŒUR DE RÉSEAU (SWITCH L3 ARISTA) ---
-    ENT-COR-01:
+    ENT-SITE-PRIM-COR-01:
       kind: arista_ceos
       image: ceos:4.30.2
 
     # --- SERVEURS ---
-    SRV-WEB:
+    ENT-SITE-PRIM-SRV-WEB:
       kind: linux
       image: alpine:latest
       exec:
@@ -62,7 +62,7 @@ topology:
       binds:
         - web-server/:/var/www/localhost/htdocs/
 
-    SRV-VOIP:
+    ENT-SITE-PRIM-SRV-VOIP:
       kind: linux
       # Image Docker communautaire populaire et stable pour Asterisk
       image: andrius/asterisk:latest
@@ -79,7 +79,7 @@ topology:
         - asterisk
 
     # --- CLIENTS ---
-    CLIENT-PC:
+    ENT-SITE-PRIM-CLIENT-PC-01:
       kind: linux
       image: alpine:latest
 
@@ -90,7 +90,7 @@ topology:
         - ip route del default
         - ip route add default via 192.168.20.254
 
-    CLIENT-PHONE1:
+    ENT-SITE-PRIM-CLIENT-PHONE-01:
       kind: linux
       image: alpine:latest
       binds:
@@ -103,7 +103,7 @@ topology:
         - ip route add default via 192.168.30.254
         #- baresip -f /root/.baresip
 
-    CLIENT-PHONE2:
+    ENT-SITE-PRIM-CLIENT-PHONE-02:
       kind: linux
       image: alpine:latest
       binds:
@@ -131,7 +131,7 @@ topology:
       kind: arista_ceos
       image: ceos:4.30.2
 
-    SRV-DNS:
+    AS-SRV-DNS:
       kind: linux
       image: ubuntu/bind9:latest
       binds:
@@ -153,28 +153,28 @@ topology:
         - apk add curl
 
   links:
-    # Interconnexion entre le Pare-feu VyOS (eth1) et le Switch Core Arista (eth1)
-    - endpoints: ["ENT-FIREWALL:eth1", "ENT-COR-01:eth1"]
+    # Interconnexion entre le Pare-feu (eth1) et le Switch Core Arista (eth1)
+    - endpoints: ["ENT-SITE-PRIM-FIREWALL:eth1", "ENT-SITE-PRIM-COR-01:eth1"]
 
     # Connexion des serveurs sur le Switch Core
-    - endpoints: ["ENT-COR-01:eth2", "SRV-WEB:eth1"]
-    - endpoints: ["ENT-COR-01:eth3", "SRV-VOIP:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-COR-01:eth2", "ENT-SITE-PRIM-SRV-WEB:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-COR-01:eth3", "ENT-SITE-PRIM-SRV-VOIP:eth1"]
 
     # Connexion des postes clients sur le Switch Core
-    - endpoints: ["ENT-COR-01:eth5", "CLIENT-PC:eth1"]
-    - endpoints: ["ENT-COR-01:eth6", "CLIENT-PHONE1:eth1"]
-    - endpoints: ["ENT-COR-01:eth7", "CLIENT-PHONE2:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-COR-01:eth5", "ENT-SITE-PRIM-CLIENT-PC-01:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-COR-01:eth6", "ENT-SITE-PRIM-CLIENT-PHONE-01:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-COR-01:eth7", "ENT-SITE-PRIM-CLIENT-PHONE-02:eth1"]
 
     # Interconnexion entre les routeurs AS et le Switch Core
-    - endpoints: ["AS-R1:eth1", "ENT-FIREWALL:eth2"]
+    - endpoints: ["AS-R1:eth1", "ENT-SITE-PRIM-FIREWALL:eth2"]
     - endpoints: ["AS-R1:eth2", "AS-R2:eth1"]
     - endpoints: ["AS-R1:eth3", "AS-R3:eth1"]
     #
     - endpoints: ["AS-R2:eth2", "AS-R3:eth2"]
-    - endpoints: ["AS-R3:eth3", "SRV-DNS:eth1"]
+    - endpoints: ["AS-R3:eth3", "AS-SRV-DNS:eth1"]
     - endpoints: ["AS-R2:eth3", "PARTICULIER-ENT:eth1"]
 
     #ports externes
-    - endpoints: ["AS-R1:eth4", "macvlan:enp1s0f0"] #entreprise
-    - endpoints: ["AS-R2:eth4","macvlan:enp1s0f1"] #particulier
-    - endpoints: ["AS-R3:eth4","macvlan:enp1s0f2"] #bgp 
+    # - endpoints: ["AS-R1:eth4", "macvlan:enp1s0f0"] #entreprise
+    # - endpoints: ["AS-R2:eth4","macvlan:enp1s0f1"] #particulier
+    # - endpoints: ["AS-R3:eth4","macvlan:enp1s0f2"] #bgp 

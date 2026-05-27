@@ -1,2 +1,10 @@
 
 **/.tls
+
+clab-*/
+
+*.bak
+.containerlab/
+
+.DS_Store
+Thumbs.db
