@@ -32,22 +32,21 @@ iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT   -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
 
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -o eth2 -j MASQUERADE
 
-iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT
 iptables -A FORWARD -i eth1 -o eth2 -j ACCEPT
 
-iptables -A FORWARD -i eth0 -o eth1 -p tcp --dport 80   -j ACCEPT
-iptables -A FORWARD -i eth0 -o eth1 -p tcp --dport 443  -j ACCEPT
-iptables -A FORWARD -i eth0 -o eth1 -p tcp --dport 53   -j ACCEPT
-iptables -A FORWARD -i eth0 -o eth1 -p udp --dport 53   -j ACCEPT
-iptables -A FORWARD -i eth0 -o eth1 -p tcp --dport 5060 -j ACCEPT
-iptables -A FORWARD -i eth0 -o eth1 -p udp --dport 5060 -j ACCEPT
-iptables -A FORWARD -i eth0 -o eth1 -p tcp --dport 5061 -j ACCEPT
-iptables -A FORWARD -i eth0 -o eth1 -p udp --dport 5061 -j ACCEPT
-iptables -A FORWARD -i eth0 -o eth1 -p udp --dport 16384:32767 -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth1 -p tcp --dport 80   -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth1 -p tcp --dport 443  -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth1 -p tcp --dport 53   -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth1 -p udp --dport 53   -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth1 -p tcp --dport 5060 -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth1 -p udp --dport 5060 -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth1 -p tcp --dport 5061 -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth1 -p udp --dport 5061 -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth1 -p udp --dport 16384:32767 -j ACCEPT
 
-iptables -A INPUT -i eth0 -p udp --dport 1194 -j ACCEPT   # VPN Nomade
+iptables -A INPUT -i eth2 -p udp --dport 1194 -j ACCEPT   # VPN Nomade
 iptables -A INPUT -i eth2 -p udp --dport 1195 -j ACCEPT   # VPN Site-à-Site
 
 iptables -A FORWARD -i tun0 -j ACCEPT
