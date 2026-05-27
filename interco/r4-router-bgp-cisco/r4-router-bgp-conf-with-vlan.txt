@@ -56,6 +56,12 @@ router ospf 10
 ! -- FIX BGP WITH OSPF --
 ip route 120.0.0.0 255.255.240.0 Null0
 
+! -- ROUTES STATIQUES LOOPBACKS AS 11 12 --
+! AS 11 (10.0.0.11) -> VLAN 1011
+ip route 10.0.0.11 255.255.255.255 10.0.1.11
+! AS 12 (10.0.0.12) -> VLAN 1012
+ip route 10.0.0.12 255.255.255.255 10.0.2.12
+
 
 ! -- ROUTAGE EXTERNE (eBGP) --
 router bgp 10
