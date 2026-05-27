@@ -9,11 +9,6 @@ Thumbs.db
 
 
 clab-*/*
-!clab-*/*/
-clab-*/*/*
-!clab-*/*/flash/
-clab-*/*/flash/*
-!clab-*/*/flash/startup-config
 
 *.bak
 .containerlab/

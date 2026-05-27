@@ -6,10 +6,10 @@
   "networkNodeAnnotations": [],
   "nodeAnnotations": [
     {
-      "id": "ENT-FIREWALL",
+      "id": "ENT-SITE-PRIM-SRV-DNS",
       "position": {
-        "x": 260,
-        "y": 360
+        "x": 20,
+        "y": 240
       }
     },
     {
@@ -71,22 +71,22 @@
     {
       "id": "ENT-SITE-PRIM-SRV-WEB",
       "position": {
-        "x": 120,
-        "y": 220
+        "x": 20,
+        "y": 140
       }
     },
     {
       "id": "ENT-SITE-PRIM-SRV-VOIP",
       "position": {
-        "x": 120,
-        "y": 420
+        "x": 20,
+        "y": 460
       }
     },
     {
       "id": "ENT-SITE-PRIM-CLIENT-PC-01",
       "position": {
-        "x": 320,
-        "y": 180
+        "x": 380,
+        "y": 160
       }
     },
     {
@@ -99,7 +99,7 @@
     {
       "id": "ENT-SITE-PRIM-CLIENT-PHONE-02",
       "position": {
-        "x": 220,
+        "x": 260,
         "y": 160
       }
     },
@@ -113,8 +113,8 @@
     {
       "id": "AS-R2",
       "position": {
-        "x": 780,
-        "y": 480
+        "x": 760,
+        "y": 460
       }
     },
     {
@@ -127,15 +127,22 @@
     {
       "id": "AS-SRV-DNS",
       "position": {
-        "x": 680,
-        "y": 460
+        "x": 760,
+        "y": 180
       }
     },
     {
       "id": "PARTICULIER-ENT",
       "position": {
         "x": 760,
-        "y": 640
+        "y": 600
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-SRV-DHCP",
+      "position": {
+        "x": 20,
+        "y": 360
       }
     }
   ],

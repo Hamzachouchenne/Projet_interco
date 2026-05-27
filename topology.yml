@@ -20,6 +20,7 @@ topology:
     ENT-SITE-PRIM-COR-01:
       kind: arista_ceos
       image: ceos:4.30.2
+      startup-config: configs/ENT-SITE-PRIM-COR-01.cfg
 
     # --- SERVEURS (IPs statiques) ---
     ENT-SITE-PRIM-SRV-WEB:
@@ -140,14 +141,17 @@ topology:
     AS-R1:
       kind: arista_ceos
       image: ceos:4.30.2
+      startup-config: configs/AS-R1.cfg
 
     AS-R2:
       kind: arista_ceos
       image: ceos:4.30.2
+      startup-config: configs/AS-R2.cfg
 
     AS-R3:
       kind: arista_ceos
       image: ceos:4.30.2
+      startup-config: configs/AS-R3.cfg
 
     AS-SRV-DNS:
       kind: linux
