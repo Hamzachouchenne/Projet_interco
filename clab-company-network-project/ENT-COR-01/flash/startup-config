@@ -1,4 +1,4 @@
-! Startup-config last modified at Fri May 22 07:15:34 2026 by root
+! Startup-config last modified at Wed May 27 15:44:01 2026 by admin
 ! device: ENT-COR-01 (cEOSLab, EOS-4.30.2F-33092737.4302F (engineering build))
 !
 no aaa root
@@ -51,6 +51,9 @@ interface Ethernet5
    switchport access vlan 20
 !
 interface Ethernet6
+   switchport access vlan 30
+!
+interface Ethernet7
    switchport access vlan 30
 !
 interface Management0

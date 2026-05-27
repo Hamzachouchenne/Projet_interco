@@ -133,10 +133,16 @@ topology:
 
     SRV-DNS:
       kind: linux
-      image: alpine:latest
+      image: ubuntu/bind9:latest
+      binds:
+        # On lie tes fichiers locaux aux fichiers du conteneur
+        - ./dns-config/named.conf:/etc/bind/named.conf
+        - ./dns-config/db.entreprise.lab:/etc/bind/db.entreprise.lab
       exec:
+        # Configuration de l'IP sur l'interface eth1 (reliée à AS-R3)
         - ip addr add 120.0.100.1/24 dev eth1
         - ip route del default
+        # Route par défaut pour que le DNS puisse répondre vers Internet/BGP
         - ip route add default via 120.0.100.254
 
     PARTICULIER-ENT:
@@ -163,7 +169,12 @@ topology:
     - endpoints: ["AS-R1:eth1", "ENT-FIREWALL:eth2"]
     - endpoints: ["AS-R1:eth2", "AS-R2:eth1"]
     - endpoints: ["AS-R1:eth3", "AS-R3:eth1"]
-    #- endpoints: ["AS-R1:eth4", "macvlan:"]
+    #
     - endpoints: ["AS-R2:eth2", "AS-R3:eth2"]
     - endpoints: ["AS-R3:eth3", "SRV-DNS:eth1"]
     - endpoints: ["AS-R2:eth3", "PARTICULIER-ENT:eth1"]
+
+    #ports externes
+    - endpoints: ["AS-R1:eth4", "macvlan:enp1s0f0"] #entreprise
+    - endpoints: ["AS-R2:eth4","macvlan:enp1s0f1"] #particulier
+    - endpoints: ["AS-R3:eth4","macvlan:enp1s0f2"] #bgp 

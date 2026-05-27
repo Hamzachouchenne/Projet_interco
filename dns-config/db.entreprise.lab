@@ -1,0 +1,14 @@
+$TTL 86400
+@   IN  SOA ns1.entreprise.lab. admin.entreprise.lab. (
+            2026052701 ; Serial
+            3600       ; Refresh
+            1800       ; Retry
+            604800     ; Expire
+            86400 )    ; Minimum TTL
+
+    IN  NS  ns1.entreprise.lab.
+ns1 IN  A   120.0.100.1
+
+vpn  IN  A   120.0.0.102 
+web  IN  A   192.168.10.10
+voip IN  A   192.168.20.10
