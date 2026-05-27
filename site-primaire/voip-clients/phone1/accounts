@@ -1,1 +1,1 @@
-sip:100@192.168.30.10;auth_pass=secret100
+sip:100@192.168.10.12;auth_pass=secret100
