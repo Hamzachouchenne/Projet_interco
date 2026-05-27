@@ -6,7 +6,7 @@
       "prefix": "clab",
       "mgmt": {
         "network": "clab",
-        "bridge": "br-004ad9995278",
+        "bridge": "br-d092d33b3b81",
         "ipv4-subnet": "172.20.20.0/24",
         "ipv4-gw": "172.20.20.1",
         "ipv6-subnet": "3fff:172:20:20::/64",
@@ -15,15 +15,180 @@
       }
     }
   },
-  "ssh-pub-keys": ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILHmw61vWbenH/V2RkBXZr6/iAv1v8vCsoWK4CGNxV7L"],
+  "ssh-pub-keys": ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKxe7IYmPbDhf1b+2yZ4nYzwyjHk0MZNjoH8RTTOvUX6"],
   "nodes": {
-    "CLIENT-PC": {
+    "AS-R1": {
       "index": "0",
+      "shortname": "AS-R1",
+      "longname": "clab-company-network-project-AS-R1",
+      "fqdn": "AS-R1.company-network-project.io",
+      "group": "",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/AS-R1",
+      "kind": "arista_ceos",
+      "image": "ceos:4.30.2",
+      "mgmt-net": "",
+      "mgmt-intf": "Management0",
+      "mgmt-ipv4-address": "172.20.20.6",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::6",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "00:1c:73:16:65:d0",
+      "labels": {
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
+        "clab-node-group": "",
+        "clab-node-kind": "arista_ceos",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/AS-R1",
+        "clab-node-longname": "clab-company-network-project-AS-R1",
+        "clab-node-name": "AS-R1",
+        "clab-node-type": "",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
+        "containerlab": "company-network-project"
+      },
+      "port-bindings": [
+      ]
+    },
+    "AS-R2": {
+      "index": "1",
+      "shortname": "AS-R2",
+      "longname": "clab-company-network-project-AS-R2",
+      "fqdn": "AS-R2.company-network-project.io",
+      "group": "",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/AS-R2",
+      "kind": "arista_ceos",
+      "image": "ceos:4.30.2",
+      "mgmt-net": "",
+      "mgmt-intf": "Management0",
+      "mgmt-ipv4-address": "172.20.20.13",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::d",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "00:1c:73:42:04:b3",
+      "labels": {
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
+        "clab-node-group": "",
+        "clab-node-kind": "arista_ceos",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/AS-R2",
+        "clab-node-longname": "clab-company-network-project-AS-R2",
+        "clab-node-name": "AS-R2",
+        "clab-node-type": "",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
+        "containerlab": "company-network-project"
+      },
+      "port-bindings": [
+      ]
+    },
+    "AS-R3": {
+      "index": "2",
+      "shortname": "AS-R3",
+      "longname": "clab-company-network-project-AS-R3",
+      "fqdn": "AS-R3.company-network-project.io",
+      "group": "",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/AS-R3",
+      "kind": "arista_ceos",
+      "image": "ceos:4.30.2",
+      "mgmt-net": "",
+      "mgmt-intf": "Management0",
+      "mgmt-ipv4-address": "172.20.20.14",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::e",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "00:1c:73:b9:b1:5c",
+      "labels": {
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
+        "clab-node-group": "",
+        "clab-node-kind": "arista_ceos",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/AS-R3",
+        "clab-node-longname": "clab-company-network-project-AS-R3",
+        "clab-node-name": "AS-R3",
+        "clab-node-type": "",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
+        "containerlab": "company-network-project"
+      },
+      "port-bindings": [
+      ]
+    },
+    "CLIENT-PC": {
+      "index": "3",
       "shortname": "CLIENT-PC",
       "longname": "clab-company-network-project-CLIENT-PC",
       "fqdn": "CLIENT-PC.company-network-project.io",
       "group": "",
-      "labdir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/CLIENT-PC",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/CLIENT-PC",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.4",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::4",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/CLIENT-PC",
+        "clab-node-longname": "clab-company-network-project-CLIENT-PC",
+        "clab-node-name": "CLIENT-PC",
+        "clab-node-type": "",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
+        "containerlab": "company-network-project"
+      },
+      "port-bindings": [
+      ]
+    },
+    "CLIENT-PHONE1": {
+      "index": "4",
+      "shortname": "CLIENT-PHONE1",
+      "longname": "clab-company-network-project-CLIENT-PHONE1",
+      "fqdn": "CLIENT-PHONE1.company-network-project.io",
+      "group": "",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/CLIENT-PHONE1",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.5",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::5",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/CLIENT-PHONE1",
+        "clab-node-longname": "clab-company-network-project-CLIENT-PHONE1",
+        "clab-node-name": "CLIENT-PHONE1",
+        "clab-node-type": "",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
+        "containerlab": "company-network-project"
+      },
+      "port-bindings": [
+      ]
+    },
+    "CLIENT-PHONE2": {
+      "index": "5",
+      "shortname": "CLIENT-PHONE2",
+      "longname": "clab-company-network-project-CLIENT-PHONE2",
+      "fqdn": "CLIENT-PHONE2.company-network-project.io",
+      "group": "",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/CLIENT-PHONE2",
       "kind": "linux",
       "image": "alpine:latest",
       "mgmt-net": "",
@@ -34,128 +199,62 @@
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
-        "clab-git-branch": "main",
-        "clab-git-hash": "4e55cff",
-        "clab-mgmt-net-bridge": "br-004ad9995278",
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
         "clab-node-group": "",
         "clab-node-kind": "linux",
-        "clab-node-lab-dir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/CLIENT-PC",
-        "clab-node-longname": "clab-company-network-project-CLIENT-PC",
-        "clab-node-name": "CLIENT-PC",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/CLIENT-PHONE2",
+        "clab-node-longname": "clab-company-network-project-CLIENT-PHONE2",
+        "clab-node-name": "CLIENT-PHONE2",
         "clab-node-type": "",
-        "clab-owner": "celian",
-        "clab-topo-file": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/topology.yml",
-        "containerlab": "company-network-project"
-      },
-      "port-bindings": [
-      ]
-    },
-    "CLIENT-PHONE": {
-      "index": "1",
-      "shortname": "CLIENT-PHONE",
-      "longname": "clab-company-network-project-CLIENT-PHONE",
-      "fqdn": "CLIENT-PHONE.company-network-project.io",
-      "group": "",
-      "labdir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/CLIENT-PHONE",
-      "kind": "linux",
-      "image": "alpine:latest",
-      "mgmt-net": "",
-      "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.13",
-      "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::d",
-      "mgmt-ipv6-prefix-length": 64,
-      "mac-address": "",
-      "labels": {
-        "clab-git-branch": "main",
-        "clab-git-hash": "4e55cff",
-        "clab-mgmt-net-bridge": "br-004ad9995278",
-        "clab-node-group": "",
-        "clab-node-kind": "linux",
-        "clab-node-lab-dir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/CLIENT-PHONE",
-        "clab-node-longname": "clab-company-network-project-CLIENT-PHONE",
-        "clab-node-name": "CLIENT-PHONE",
-        "clab-node-type": "",
-        "clab-owner": "celian",
-        "clab-topo-file": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/topology.yml",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
         "containerlab": "company-network-project"
       },
       "port-bindings": [
       ]
     },
     "ENT-COR-01": {
-      "index": "2",
+      "index": "6",
       "shortname": "ENT-COR-01",
       "longname": "clab-company-network-project-ENT-COR-01",
       "fqdn": "ENT-COR-01.company-network-project.io",
       "group": "",
-      "labdir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/ENT-COR-01",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/ENT-COR-01",
       "kind": "arista_ceos",
       "image": "ceos:4.30.2",
       "mgmt-net": "",
       "mgmt-intf": "Management0",
-      "mgmt-ipv4-address": "172.20.20.9",
+      "mgmt-ipv4-address": "172.20.20.7",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::9",
+      "mgmt-ipv6-address": "3fff:172:20:20::7",
       "mgmt-ipv6-prefix-length": 64,
-      "mac-address": "00:1c:73:2f:e2:b1",
+      "mac-address": "00:1c:73:ec:b0:30",
       "labels": {
-        "clab-git-branch": "main",
-        "clab-git-hash": "4e55cff",
-        "clab-mgmt-net-bridge": "br-004ad9995278",
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
         "clab-node-group": "",
         "clab-node-kind": "arista_ceos",
-        "clab-node-lab-dir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/ENT-COR-01",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/ENT-COR-01",
         "clab-node-longname": "clab-company-network-project-ENT-COR-01",
         "clab-node-name": "ENT-COR-01",
         "clab-node-type": "",
-        "clab-owner": "celian",
-        "clab-topo-file": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/topology.yml",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
         "containerlab": "company-network-project"
       },
       "port-bindings": [
       ]
     },
     "ENT-FIREWALL": {
-      "index": "3",
+      "index": "7",
       "shortname": "ENT-FIREWALL",
       "longname": "clab-company-network-project-ENT-FIREWALL",
       "fqdn": "ENT-FIREWALL.company-network-project.io",
       "group": "",
-      "labdir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/ENT-FIREWALL",
-      "kind": "linux",
-      "image": "alpine:latest",
-      "mgmt-net": "",
-      "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.11",
-      "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::b",
-      "mgmt-ipv6-prefix-length": 64,
-      "mac-address": "",
-      "labels": {
-        "clab-git-branch": "main",
-        "clab-git-hash": "4e55cff",
-        "clab-mgmt-net-bridge": "br-004ad9995278",
-        "clab-node-group": "",
-        "clab-node-kind": "linux",
-        "clab-node-lab-dir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/ENT-FIREWALL",
-        "clab-node-longname": "clab-company-network-project-ENT-FIREWALL",
-        "clab-node-name": "ENT-FIREWALL",
-        "clab-node-type": "",
-        "clab-owner": "celian",
-        "clab-topo-file": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/topology.yml",
-        "containerlab": "company-network-project"
-      },
-      "port-bindings": [
-      ]
-    },
-    "SRV-DNS": {
-      "index": "4",
-      "shortname": "SRV-DNS",
-      "longname": "clab-company-network-project-SRV-DNS",
-      "fqdn": "SRV-DNS.company-network-project.io",
-      "group": "",
-      "labdir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/SRV-DNS",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/ENT-FIREWALL",
       "kind": "linux",
       "image": "alpine:latest",
       "mgmt-net": "",
@@ -166,64 +265,142 @@
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
-        "clab-git-branch": "main",
-        "clab-git-hash": "4e55cff",
-        "clab-mgmt-net-bridge": "br-004ad9995278",
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
         "clab-node-group": "",
         "clab-node-kind": "linux",
-        "clab-node-lab-dir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/SRV-DNS",
-        "clab-node-longname": "clab-company-network-project-SRV-DNS",
-        "clab-node-name": "SRV-DNS",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/ENT-FIREWALL",
+        "clab-node-longname": "clab-company-network-project-ENT-FIREWALL",
+        "clab-node-name": "ENT-FIREWALL",
         "clab-node-type": "",
-        "clab-owner": "celian",
-        "clab-topo-file": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/topology.yml",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
         "containerlab": "company-network-project"
       },
       "port-bindings": [
       ]
     },
+    "PARTICULIER-ENT": {
+      "index": "8",
+      "shortname": "PARTICULIER-ENT",
+      "longname": "clab-company-network-project-PARTICULIER-ENT",
+      "fqdn": "PARTICULIER-ENT.company-network-project.io",
+      "group": "",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/PARTICULIER-ENT",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.9",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::9",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/PARTICULIER-ENT",
+        "clab-node-longname": "clab-company-network-project-PARTICULIER-ENT",
+        "clab-node-name": "PARTICULIER-ENT",
+        "clab-node-type": "",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
+        "containerlab": "company-network-project"
+      },
+      "port-bindings": [
+      ]
+    },
+    "SRV-DNS": {
+      "index": "9",
+      "shortname": "SRV-DNS",
+      "longname": "clab-company-network-project-SRV-DNS",
+      "fqdn": "SRV-DNS.company-network-project.io",
+      "group": "",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/SRV-DNS",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.11",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::b",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/SRV-DNS",
+        "clab-node-longname": "clab-company-network-project-SRV-DNS",
+        "clab-node-name": "SRV-DNS",
+        "clab-node-type": "",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
+        "containerlab": "company-network-project"
+      },
+      "port-bindings": [
+      ]
+    },
+    "SRV-LDAP": {
+      "index": "10",
+      "shortname": "SRV-LDAP",
+      "longname": "clab-company-network-project-SRV-LDAP",
+      "fqdn": "SRV-LDAP.company-network-project.io",
+      "group": "",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/SRV-LDAP",
+      "kind": "linux",
+      "image": "osixia/openldap:1.5.0",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.2",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::2",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/SRV-LDAP",
+        "clab-node-longname": "clab-company-network-project-SRV-LDAP",
+        "clab-node-name": "SRV-LDAP",
+        "clab-node-type": "",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
+        "containerlab": "company-network-project"
+      },
+      "port-bindings": [
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 389,
+          "protocol": "tcp"
+        },
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 636,
+          "protocol": "tcp"
+        }
+      ]
+    },
     "SRV-VOIP": {
-      "index": "5",
+      "index": "11",
       "shortname": "SRV-VOIP",
       "longname": "clab-company-network-project-SRV-VOIP",
       "fqdn": "SRV-VOIP.company-network-project.io",
       "group": "",
-      "labdir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/SRV-VOIP",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/SRV-VOIP",
       "kind": "linux",
       "image": "andrius/asterisk:latest",
-      "mgmt-net": "",
-      "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.14",
-      "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::e",
-      "mgmt-ipv6-prefix-length": 64,
-      "mac-address": "",
-      "labels": {
-        "clab-git-branch": "main",
-        "clab-git-hash": "4e55cff",
-        "clab-mgmt-net-bridge": "br-004ad9995278",
-        "clab-node-group": "",
-        "clab-node-kind": "linux",
-        "clab-node-lab-dir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/SRV-VOIP",
-        "clab-node-longname": "clab-company-network-project-SRV-VOIP",
-        "clab-node-name": "SRV-VOIP",
-        "clab-node-type": "",
-        "clab-owner": "celian",
-        "clab-topo-file": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/topology.yml",
-        "containerlab": "company-network-project"
-      },
-      "port-bindings": [
-      ]
-    },
-    "SRV-WEB": {
-      "index": "6",
-      "shortname": "SRV-WEB",
-      "longname": "clab-company-network-project-SRV-WEB",
-      "fqdn": "SRV-WEB.company-network-project.io",
-      "group": "",
-      "labdir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/SRV-WEB",
-      "kind": "linux",
-      "image": "alpine:latest",
       "mgmt-net": "",
       "mgmt-intf": "",
       "mgmt-ipv4-address": "172.20.20.12",
@@ -232,17 +409,50 @@
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
-        "clab-git-branch": "main",
-        "clab-git-hash": "4e55cff",
-        "clab-mgmt-net-bridge": "br-004ad9995278",
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
         "clab-node-group": "",
         "clab-node-kind": "linux",
-        "clab-node-lab-dir": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/clab-company-network-project/SRV-WEB",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/SRV-VOIP",
+        "clab-node-longname": "clab-company-network-project-SRV-VOIP",
+        "clab-node-name": "SRV-VOIP",
+        "clab-node-type": "",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
+        "containerlab": "company-network-project"
+      },
+      "port-bindings": [
+      ]
+    },
+    "SRV-WEB": {
+      "index": "12",
+      "shortname": "SRV-WEB",
+      "longname": "clab-company-network-project-SRV-WEB",
+      "fqdn": "SRV-WEB.company-network-project.io",
+      "group": "",
+      "labdir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/SRV-WEB",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.3",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::3",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "user-ldap",
+        "clab-git-hash": "43e5c74",
+        "clab-mgmt-net-bridge": "br-d092d33b3b81",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/mnt/c/sources/N7/Projet_interco/clab-company-network-project/SRV-WEB",
         "clab-node-longname": "clab-company-network-project-SRV-WEB",
         "clab-node-name": "SRV-WEB",
         "clab-node-type": "",
-        "clab-owner": "celian",
-        "clab-topo-file": "/home/celian/workspace/etudes/enseeiht/s8/interco/Projet_interco/topology.yml",
+        "clab-owner": "antoine",
+        "clab-topo-file": "/mnt/c/sources/N7/Projet_interco/topology.yml",
         "containerlab": "company-network-project"
       },
       "port-bindings": [
@@ -255,13 +465,13 @@
         "a": {
           "node": "ENT-FIREWALL",
           "interface": "eth1",
-          "mac": "aa:c1:ab:57:e2:11",
+          "mac": "aa:c1:ab:1d:82:0c",
           "peer": "z"
         },
         "z": {
           "node": "ENT-COR-01",
           "interface": "eth1",
-          "mac": "aa:c1:ab:0c:1d:28",
+          "mac": "aa:c1:ab:e1:89:d1",
           "peer": "a"
         }
       }
@@ -271,13 +481,13 @@
         "a": {
           "node": "ENT-COR-01",
           "interface": "eth2",
-          "mac": "aa:c1:ab:92:e4:4d",
+          "mac": "aa:c1:ab:7a:04:ed",
           "peer": "z"
         },
         "z": {
           "node": "SRV-WEB",
           "interface": "eth1",
-          "mac": "aa:c1:ab:72:30:c9",
+          "mac": "aa:c1:ab:0f:ed:eb",
           "peer": "a"
         }
       }
@@ -287,13 +497,13 @@
         "a": {
           "node": "ENT-COR-01",
           "interface": "eth3",
-          "mac": "aa:c1:ab:d2:b9:8a",
+          "mac": "aa:c1:ab:02:89:a2",
           "peer": "z"
         },
         "z": {
           "node": "SRV-VOIP",
           "interface": "eth1",
-          "mac": "aa:c1:ab:4d:df:ff",
+          "mac": "aa:c1:ab:83:49:31",
           "peer": "a"
         }
       }
@@ -303,13 +513,13 @@
         "a": {
           "node": "ENT-COR-01",
           "interface": "eth4",
-          "mac": "aa:c1:ab:46:7d:39",
+          "mac": "aa:c1:ab:9a:51:2b",
           "peer": "z"
         },
         "z": {
-          "node": "SRV-DNS",
+          "node": "SRV-LDAP",
           "interface": "eth1",
-          "mac": "aa:c1:ab:15:e0:1b",
+          "mac": "aa:c1:ab:ec:c8:8e",
           "peer": "a"
         }
       }
@@ -319,13 +529,13 @@
         "a": {
           "node": "ENT-COR-01",
           "interface": "eth5",
-          "mac": "aa:c1:ab:b2:24:95",
+          "mac": "aa:c1:ab:d9:30:c2",
           "peer": "z"
         },
         "z": {
           "node": "CLIENT-PC",
           "interface": "eth1",
-          "mac": "aa:c1:ab:e2:f2:a7",
+          "mac": "aa:c1:ab:fd:0e:6f",
           "peer": "a"
         }
       }
@@ -335,13 +545,125 @@
         "a": {
           "node": "ENT-COR-01",
           "interface": "eth6",
-          "mac": "aa:c1:ab:36:61:99",
+          "mac": "aa:c1:ab:33:0b:14",
           "peer": "z"
         },
         "z": {
-          "node": "CLIENT-PHONE",
+          "node": "CLIENT-PHONE1",
           "interface": "eth1",
-          "mac": "aa:c1:ab:ec:c5:5b",
+          "mac": "aa:c1:ab:28:26:d9",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "ENT-COR-01",
+          "interface": "eth7",
+          "mac": "aa:c1:ab:78:93:b3",
+          "peer": "z"
+        },
+        "z": {
+          "node": "CLIENT-PHONE2",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:0f:d1:77",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "AS-R1",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:10:ff:26",
+          "peer": "z"
+        },
+        "z": {
+          "node": "ENT-FIREWALL",
+          "interface": "eth2",
+          "mac": "aa:c1:ab:ec:91:d8",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "AS-R1",
+          "interface": "eth2",
+          "mac": "aa:c1:ab:af:49:90",
+          "peer": "z"
+        },
+        "z": {
+          "node": "AS-R2",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:2d:55:af",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "AS-R1",
+          "interface": "eth3",
+          "mac": "aa:c1:ab:3b:14:42",
+          "peer": "z"
+        },
+        "z": {
+          "node": "AS-R3",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:e2:60:ba",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "AS-R2",
+          "interface": "eth2",
+          "mac": "aa:c1:ab:1d:f6:09",
+          "peer": "z"
+        },
+        "z": {
+          "node": "AS-R3",
+          "interface": "eth2",
+          "mac": "aa:c1:ab:8e:e9:b3",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "AS-R3",
+          "interface": "eth3",
+          "mac": "aa:c1:ab:b0:27:41",
+          "peer": "z"
+        },
+        "z": {
+          "node": "SRV-DNS",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:11:83:f3",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "AS-R2",
+          "interface": "eth3",
+          "mac": "aa:c1:ab:4c:e2:07",
+          "peer": "z"
+        },
+        "z": {
+          "node": "PARTICULIER-ENT",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:4c:96:9b",
           "peer": "a"
         }
       }

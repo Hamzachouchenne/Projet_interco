@@ -11,19 +11,31 @@ all:
         ansible_user: admin
         ansible_password: admin
       hosts:
+        clab-company-network-project-AS-R1:
+          ansible_host: 172.20.20.6
+        clab-company-network-project-AS-R2:
+          ansible_host: 172.20.20.13
+        clab-company-network-project-AS-R3:
+          ansible_host: 172.20.20.14
         clab-company-network-project-ENT-COR-01:
-          ansible_host: 172.20.20.9
+          ansible_host: 172.20.20.7
     linux:
       hosts:
         clab-company-network-project-CLIENT-PC:
+          ansible_host: 172.20.20.4
+        clab-company-network-project-CLIENT-PHONE1:
+          ansible_host: 172.20.20.5
+        clab-company-network-project-CLIENT-PHONE2:
           ansible_host: 172.20.20.8
-        clab-company-network-project-CLIENT-PHONE:
-          ansible_host: 172.20.20.13
         clab-company-network-project-ENT-FIREWALL:
-          ansible_host: 172.20.20.11
-        clab-company-network-project-SRV-DNS:
           ansible_host: 172.20.20.10
+        clab-company-network-project-PARTICULIER-ENT:
+          ansible_host: 172.20.20.9
+        clab-company-network-project-SRV-DNS:
+          ansible_host: 172.20.20.11
+        clab-company-network-project-SRV-LDAP:
+          ansible_host: 172.20.20.2
         clab-company-network-project-SRV-VOIP:
-          ansible_host: 172.20.20.14
-        clab-company-network-project-SRV-WEB:
           ansible_host: 172.20.20.12
+        clab-company-network-project-SRV-WEB:
+          ansible_host: 172.20.20.3
