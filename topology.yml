@@ -7,20 +7,138 @@ topology:
     # SITE PRIMAIRE
     # ================================================================
 
-    # --- FIREWALL + VPN (PKI et PSK auto-générés au 1er démarrage) ---
+    # --- ROUTEUR D'ACCÈS CE (cEOS) ---
+    ENT-SITE-PRIM-RTR-01:
+      kind: arista_ceos
+      image: ceos:4.30.2
+      startup-config: site-primaire/routeur/ENT-SITE-PRIM-RTR-01.cfg
+
+    # --- FIREWALL + VPN ---
     ENT-SITE-PRIM-FIREWALL:
       kind: linux
       image: alpine:latest
       binds:
-        - ./site-primaire-firewall/:/etc/openvpn/
+        - ./site-primaire/firewall/:/etc/openvpn/
       exec:
         - sh /etc/openvpn/firewall-init.sh
 
-    # --- SWITCH CŒUR DE RÉSEAU (L3 Arista) ---
+    # --- SWITCH L3 COEUR + ACL (multilayer switch, bridge VLAN-aware) ---
     ENT-SITE-PRIM-COR-01:
-      kind: arista_ceos
-      image: ceos:4.30.2
-      startup-config: routers-config/ENT-SITE-PRIM-COR-01.cfg
+      kind: linux
+      image: alpine:latest
+      exec:
+        - sysctl -w net.ipv4.ip_forward=1
+        - apk add --no-cache iproute2 iptables
+        # Interface Firewall (untagged)
+        - ip addr add 192.168.0.2/30 dev eth1
+        - ip link set eth1 up
+        - ip route add default via 192.168.0.1
+        # Bridge VLAN-aware (trunk eth2 → SW-DATACENTER, trunk eth3 → SW-DESKOFFICE)
+        - ip link add br0 type bridge vlan_filtering 1
+        - ip link set eth2 master br0
+        - ip link set eth3 master br0
+        - ip link set eth2 up
+        - ip link set eth3 up
+        - ip link set br0 up
+        # eth2 trunk → SW-DATACENTER : VLAN 10, 20, 30
+        - bridge vlan add dev eth2 vid 10 tagged
+        - bridge vlan add dev eth2 vid 20 tagged
+        - bridge vlan add dev eth2 vid 30 tagged
+        - bridge vlan del dev eth2 vid 1
+        # eth3 trunk → SW-DESKOFFICE : VLAN 20, 30
+        - bridge vlan add dev eth3 vid 20 tagged
+        - bridge vlan add dev eth3 vid 30 tagged
+        - bridge vlan del dev eth3 vid 1
+        # Le bridge lui-même participe aux VLANs pour les SVIs
+        - bridge vlan add dev br0 vid 10 self
+        - bridge vlan add dev br0 vid 20 self
+        - bridge vlan add dev br0 vid 30 self
+        - bridge vlan del dev br0 vid 1 self
+        # SVIs : passerelles de routage inter-VLAN
+        - ip link add link br0 name br0.10 type vlan id 10
+        - ip link add link br0 name br0.20 type vlan id 20
+        - ip link add link br0 name br0.30 type vlan id 30
+        - ip addr add 192.168.10.254/24 dev br0.10
+        - ip addr add 192.168.20.254/24 dev br0.20
+        - ip addr add 192.168.30.254/24 dev br0.30
+        - ip link set br0.10 up
+        - ip link set br0.20 up
+        - ip link set br0.30 up
+        # ACL inter-VLAN
+        - iptables -P FORWARD DROP
+        - iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+        - iptables -A FORWARD -i eth1 -j ACCEPT
+        - iptables -A FORWARD -o eth1 -j ACCEPT
+        - iptables -A FORWARD -i br0.20 -o br0.10 -p tcp --dport 80 -j ACCEPT
+        - iptables -A FORWARD -i br0.20 -o br0.10 -p tcp --dport 443 -j ACCEPT
+        - iptables -A FORWARD -i br0.20 -o br0.10 -p udp --dport 53 -j ACCEPT
+        - iptables -A FORWARD -i br0.20 -o br0.10 -p tcp --dport 53 -j ACCEPT
+        - iptables -A FORWARD -i br0.30 -o br0.10 -p udp --dport 53 -j ACCEPT
+        - iptables -A FORWARD -i br0.30 -o br0.10 -p tcp --dport 53 -j ACCEPT
+        # QoS DSCP EF (46) sur trafic VoIP VLAN30
+        - iptables -t mangle -A FORWARD -i br0.30 -p udp --dport 5060 -j DSCP --set-dscp 46
+        - iptables -t mangle -A FORWARD -i br0.30 -p tcp --dport 5060 -j DSCP --set-dscp 46
+        - iptables -t mangle -A FORWARD -i br0.30 -p udp --dport 16384:32767 -j DSCP --set-dscp 46
+
+    # --- SWITCHES L2 VLAN-AWARE ---
+    ENT-SITE-PRIM-SW-DATACENTER:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - apk add --no-cache iproute2
+        - ip link add br0 type bridge vlan_filtering 1
+        - ip link set eth1 master br0
+        - ip link set eth2 master br0
+        - ip link set eth3 master br0
+        - ip link set eth4 master br0
+        - ip link set eth5 master br0
+        - ip link set eth6 master br0
+        - ip link set br0 up
+        # eth1: trunk → COR-01 (VLAN 10, 20, 30 tagged)
+        - bridge vlan add dev eth1 vid 10 tagged
+        - bridge vlan add dev eth1 vid 20 tagged
+        - bridge vlan add dev eth1 vid 30 tagged
+        - bridge vlan del dev eth1 vid 1
+        # eth2: SRV-WEB (access VLAN 10)
+        - bridge vlan add dev eth2 vid 10 pvid untagged
+        - bridge vlan del dev eth2 vid 1
+        # eth3: SRV-DNS (access VLAN 10)
+        - bridge vlan add dev eth3 vid 10 pvid untagged
+        - bridge vlan del dev eth3 vid 1
+        # eth4: SRV-VOIP (access VLAN 30)
+        - bridge vlan add dev eth4 vid 30 pvid untagged
+        - bridge vlan del dev eth4 vid 1
+        # eth5: SRV-DHCP eth1 (access VLAN 20)
+        - bridge vlan add dev eth5 vid 20 pvid untagged
+        - bridge vlan del dev eth5 vid 1
+        # eth6: SRV-DHCP eth2 (access VLAN 30)
+        - bridge vlan add dev eth6 vid 30 pvid untagged
+        - bridge vlan del dev eth6 vid 1
+
+    ENT-SITE-PRIM-SW-DESKOFFICE:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - apk add --no-cache iproute2
+        - ip link add br0 type bridge vlan_filtering 1
+        - ip link set eth1 master br0
+        - ip link set eth2 master br0
+        - ip link set eth3 master br0
+        - ip link set eth4 master br0
+        - ip link set br0 up
+        # eth1: trunk → COR-01 (VLAN 20, 30 tagged)
+        - bridge vlan add dev eth1 vid 20 tagged
+        - bridge vlan add dev eth1 vid 30 tagged
+        - bridge vlan del dev eth1 vid 1
+        # eth2: PC-01 (access VLAN 20)
+        - bridge vlan add dev eth2 vid 20 pvid untagged
+        - bridge vlan del dev eth2 vid 1
+        # eth3: PHONE-01 (access VLAN 30)
+        - bridge vlan add dev eth3 vid 30 pvid untagged
+        - bridge vlan del dev eth3 vid 1
+        # eth4: PHONE-02 (access VLAN 30)
+        - bridge vlan add dev eth4 vid 30 pvid untagged
+        - bridge vlan del dev eth4 vid 1
 
     # --- SERVEURS (IPs statiques) ---
     ENT-SITE-PRIM-SRV-WEB:
@@ -35,11 +153,14 @@ topology:
         - ip route del default
         - ip route add default via 192.168.10.254
       binds:
-        - web-server/:/var/www/localhost/htdocs/
+        - site-primaire/web/:/var/www/localhost/htdocs/
 
     ENT-SITE-PRIM-SRV-DNS:
       kind: linux
-      image: alpine:latest
+      image: ubuntu/bind9:latest
+      binds:
+        - ./site-primaire/dns/named.conf:/etc/bind/named.conf
+        - ./site-primaire/dns/db.entreprise.lab:/etc/bind/db.entreprise.lab
       exec:
         - ip addr add 192.168.10.11/24 dev eth1
         - ip route del default
@@ -49,7 +170,7 @@ topology:
       kind: linux
       image: andrius/asterisk:latest
       binds:
-        - ./asterisk-config:/etc/asterisk
+        - ./site-primaire/voip:/etc/asterisk
       cmd: sleep infinity
       exec:
         - apt-get update
@@ -65,7 +186,7 @@ topology:
       kind: linux
       image: alpine:latest
       binds:
-        - ./site-primaire-dhcp/:/etc/dhcp/
+        - ./site-primaire/dhcp/:/etc/dhcp/
       exec:
         - sh /etc/dhcp/dhcp-init.sh
 
@@ -82,7 +203,7 @@ topology:
       kind: linux
       image: alpine:latest
       binds:
-        - ./asterisk-client/phone1:/root/.baresip
+        - ./site-primaire/voip-clients/phone1:/root/.baresip
       exec:
         - apk update
         - apk add baresip --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
@@ -93,7 +214,7 @@ topology:
       kind: linux
       image: alpine:latest
       binds:
-        - ./asterisk-client/phone2:/root/.baresip
+        - ./site-primaire/voip-clients/phone2:/root/.baresip
       exec:
         - apk update
         - apk add baresip --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
@@ -104,30 +225,21 @@ topology:
     # SITE SECONDAIRE
     # ================================================================
 
-    # # --- FIREWALL + VPN client (attend la PSK du site primaire) + DNS forwarder ---
+    # # --- FIREWALL + VPN client + DHCP ---
     # ENT-SITE-SECO-FIREWALL:
     #   kind: linux
     #   image: alpine:latest
     #   binds:
-    #     - ./site-secondaire-firewall/:/etc/openvpn/
+    #     - ./site-secondaire/firewall/:/etc/openvpn/
     #   exec:
     #     - sh /etc/openvpn/firewall-init.sh
 
-    # # --- COEUR DE RESEAU SITE SECONDAIRE ---
+    # # --- COEUR DE RESEAU SITE SECONDAIRE (cEOS) ---
     # ENT-SITE-SECO-COR-01:
     #   kind: arista_ceos
     #   image: ceos:4.30.2
 
-    # # --- DHCP : sert le LAN 192.168.50.0/24 ---
-    # ENT-SITE-SECO-SRV-DHCP:
-    #   kind: linux
-    #   image: alpine:latest
-    #   binds:
-    #     - ./site-secondaire-dhcp/:/etc/dhcp/
-    #   exec:
-    #     - sh /etc/dhcp/dhcp-init.sh
-
-    # # --- CLIENT (IP via DHCP) ---
+    # # --- CLIENT ---
     # ENT-SITE-SECO-CLIENT-PC-01:
     #   kind: linux
     #   image: alpine:latest
@@ -135,36 +247,33 @@ topology:
     #     - sh -c "for i in 1 2 3 4 5 6 7 8 9 10; do udhcpc -i eth1 -n -t 5 && break; sleep 5; done"
 
     # ================================================================
-    # AS routers and additional hosts
+    # AS 10
     # ================================================================
 
     AS-R1:
       kind: arista_ceos
       image: ceos:4.30.2
-      startup-config: routers-config/AS-R1.cfg
+      startup-config: as/routeurs/AS-R1.cfg
 
     AS-R2:
       kind: arista_ceos
       image: ceos:4.30.2
-      startup-config: routers-config/AS-R2.cfg
+      startup-config: as/routeurs/AS-R2.cfg
 
     AS-R3:
       kind: arista_ceos
       image: ceos:4.30.2
-      startup-config: routers-config/AS-R3.cfg
+      startup-config: as/routeurs/AS-R3.cfg
 
     AS-SRV-DNS:
       kind: linux
       image: ubuntu/bind9:latest
       binds:
-        # On lie tes fichiers locaux aux fichiers du conteneur
-        - ./dns-config/named.conf:/etc/bind/named.conf
-        - ./dns-config/db.entreprise.lab:/etc/bind/db.entreprise.lab
+        - ./as/dns/named.conf:/etc/bind/named.conf
+        - ./as/dns/db.entreprise.lab:/etc/bind/db.entreprise.lab
       exec:
-        # Configuration de l'IP sur l'interface eth1 (reliée à AS-R3)
         - ip addr add 120.0.100.1/24 dev eth1
         - ip route del default
-        # Route par défaut pour que le DNS puisse répondre vers Internet/BGP
         - ip route add default via 120.0.100.254
 
     PARTICULIER-ENT:
@@ -175,26 +284,32 @@ topology:
         - apk add curl
 
   links:
-    # Interconnexion entre le Pare-feu (eth1) et le Switch Core Arista (eth1)
+    # CE Router → Firewall → COR-01
+    - endpoints: ["ENT-SITE-PRIM-RTR-01:eth1", "ENT-SITE-PRIM-FIREWALL:eth2"]
     - endpoints: ["ENT-SITE-PRIM-FIREWALL:eth1", "ENT-SITE-PRIM-COR-01:eth1"]
 
-    # Connexion des serveurs sur le Switch Core
-    - endpoints: ["ENT-SITE-PRIM-COR-01:eth2", "ENT-SITE-PRIM-SRV-WEB:eth1"]
-    - endpoints: ["ENT-SITE-PRIM-COR-01:eth3", "ENT-SITE-PRIM-SRV-VOIP:eth1"]
+    # COR-01 → Switches L2 VLAN-aware (trunks)
+    - endpoints: ["ENT-SITE-PRIM-COR-01:eth2", "ENT-SITE-PRIM-SW-DATACENTER:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-COR-01:eth3", "ENT-SITE-PRIM-SW-DESKOFFICE:eth1"]
 
-    # Connexion des postes clients sur le Switch Core
-    - endpoints: ["ENT-SITE-PRIM-COR-01:eth4", "ENT-SITE-PRIM-SRV-DNS:eth1"]
-    - endpoints: ["ENT-SITE-PRIM-COR-01:eth5", "ENT-SITE-PRIM-CLIENT-PC-01:eth1"]
-    - endpoints: ["ENT-SITE-PRIM-COR-01:eth6", "ENT-SITE-PRIM-CLIENT-PHONE-01:eth1"]
-    - endpoints: ["ENT-SITE-PRIM-COR-01:eth7", "ENT-SITE-PRIM-CLIENT-PHONE-02:eth1"]
-    - endpoints: ["ENT-SITE-PRIM-COR-01:eth8", "ENT-SITE-PRIM-SRV-DHCP:eth1"]
-    - endpoints: ["ENT-SITE-PRIM-COR-01:eth9", "ENT-SITE-PRIM-SRV-DHCP:eth2"]
+    # SW-DATACENTER (VLAN10: WEB+DNS / VLAN20: DHCP / VLAN30: VoIP+DHCP)
+    - endpoints: ["ENT-SITE-PRIM-SW-DATACENTER:eth2", "ENT-SITE-PRIM-SRV-WEB:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-SW-DATACENTER:eth3", "ENT-SITE-PRIM-SRV-DNS:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-SW-DATACENTER:eth4", "ENT-SITE-PRIM-SRV-VOIP:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-SW-DATACENTER:eth5", "ENT-SITE-PRIM-SRV-DHCP:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-SW-DATACENTER:eth6", "ENT-SITE-PRIM-SRV-DHCP:eth2"]
 
-    # Interconnexion entre les routeurs AS et le Switch Core
-    - endpoints: ["AS-R1:eth1", "ENT-SITE-PRIM-FIREWALL:eth2"]
+    # SW-DESKOFFICE (VLAN20: PC / VLAN30: Téléphones)
+    - endpoints: ["ENT-SITE-PRIM-SW-DESKOFFICE:eth2", "ENT-SITE-PRIM-CLIENT-PC-01:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-SW-DESKOFFICE:eth3", "ENT-SITE-PRIM-CLIENT-PHONE-01:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-SW-DESKOFFICE:eth4", "ENT-SITE-PRIM-CLIENT-PHONE-02:eth1"]
+
+    # CE Router → AS-R1
+    - endpoints: ["ENT-SITE-PRIM-RTR-01:eth2", "AS-R1:eth1"]
+
+    # AS 10 interne
     - endpoints: ["AS-R1:eth2", "AS-R2:eth1"]
     - endpoints: ["AS-R1:eth3", "AS-R3:eth1"]
-    #
     - endpoints: ["AS-R2:eth2", "AS-R3:eth2"]
     - endpoints: ["AS-R3:eth3", "AS-SRV-DNS:eth1"]
     - endpoints: ["AS-R2:eth3", "PARTICULIER-ENT:eth1"]
@@ -202,4 +317,4 @@ topology:
     #ports externes
     # - endpoints: ["AS-R1:eth4", "macvlan:enp1s0f0"] #entreprise
     # - endpoints: ["AS-R2:eth4","macvlan:enp1s0f1"] #particulier
-    # - endpoints: ["AS-R3:eth4","macvlan:enp1s0f2"] #bgp 
+    # - endpoints: ["AS-R3:eth4","macvlan:enp1s0f2"] #bgp

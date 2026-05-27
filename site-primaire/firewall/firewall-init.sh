@@ -14,13 +14,14 @@ apk add --no-cache iptables openvpn openvpn-auth-ldap
 # --- 3. INTERFACES RÉSEAU ---
 ip addr add 192.168.0.1/30 dev eth1   # LAN -> Switch Arista ENT-COR-01
 ip link set eth1 up
-ip addr add 203.0.113.1/30 dev eth2   # WAN inter-sites -> Site Secondaire
+ip addr add 192.168.5.1/30 dev eth2   # WAN -> CE Router (ENT-RTR-01)
 ip link set eth2 up
 
-# --- 4. ROUTES STATIQUES VERS LES RÉSEAUX INTERNES ---
+# --- 4. ROUTES ---
 ip route add 192.168.10.0/24 via 192.168.0.2   # Serveurs
 ip route add 192.168.20.0/24 via 192.168.0.2   # Clients
 ip route add 192.168.30.0/24 via 192.168.0.2   # VoIP
+ip route add 120.0.0.0/16 via 192.168.5.2       # AS network via CE Router
 
 # --- 5. RÈGLES IPTABLES ---
 iptables -P INPUT   DROP
@@ -34,6 +35,7 @@ iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
 iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT
+iptables -A FORWARD -i eth1 -o eth2 -j ACCEPT
 
 iptables -A FORWARD -i eth0 -o eth1 -p tcp --dport 80   -j ACCEPT
 iptables -A FORWARD -i eth0 -o eth1 -p tcp --dport 443  -j ACCEPT

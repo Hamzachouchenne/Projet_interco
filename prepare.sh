@@ -10,9 +10,9 @@
 
 set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PKI_DIR="$SCRIPT_DIR/site-primaire-firewall/pki"
-PSK_PRI="$SCRIPT_DIR/site-primaire-firewall/keys/secret.key"
-PSK_SEC="$SCRIPT_DIR/site-secondaire-firewall/keys/secret.key"
+PKI_DIR="$SCRIPT_DIR/site-primaire/firewall/pki"
+PSK_PRI="$SCRIPT_DIR/site-primaire/firewall/keys/secret.key"
+PSK_SEC="$SCRIPT_DIR/site-secondaire/firewall/keys/secret.key"
 
 # --- 1. CLÉ PSK SITE-À-SITE ---
 if [ -f "$PSK_PRI" ] && [ -f "$PSK_SEC" ]; then

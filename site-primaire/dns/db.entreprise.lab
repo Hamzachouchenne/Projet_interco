@@ -7,8 +7,8 @@ $TTL 86400
             86400 )    ; Minimum TTL
 
     IN  NS  ns1.entreprise.lab.
-ns1 IN  A   120.0.100.1
+ns1  IN  A   192.168.10.11
 
-vpn  IN  A   120.0.0.102 
 web  IN  A   192.168.10.10
-voip IN  A   192.168.20.10
+voip IN  A   192.168.30.10
+vpn  IN  A   120.0.1.2
