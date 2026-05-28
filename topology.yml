@@ -93,18 +93,17 @@ topology:
         - ip route del default
         - ip route add default via 192.168.10.254
 
-    #SRV-LDAP-UI:
-    #  kind: linux
-    #  image: osixia/phpldapadmin:0.9.0
-    #  env:
-    #    # On dit à l'UI vers quel serveur LDAP pointer
-    #    LDAP_SERVER_NAME: "as10.entreprise"
-    #    LDAP_SERVER_HOST: "192.168.10.20"
-    #    LDAP_SERVER_BASE_DN: "dc=as10,dc=entreprise"
-    #  exec:
-    #    - ip addr add 192.168.10.21/24 dev eth1
-    #    - ip route del default
-    #    - ip route add default via 192.168.10.254
+    SRV-LDAP-UI:
+      kind: linux
+      image: osixia/phpldapadmin:0.9.0
+      env:
+        # On dit à l'UI vers quel serveur LDAP pointer
+        PHPLDAPADMIN_LDAP_HOSTS: "192.168.10.20"
+        PHPLDAPADMIN_HTTPS: "false"
+      exec:
+        - ip addr add 192.168.10.21/24 dev eth1
+        - ip route del default
+        - ip route add default via 192.168.10.254
 
     # --- CLIENTS ---
     CLIENT-PC:
@@ -182,7 +181,7 @@ topology:
     - endpoints: ["ENT-COR-01:eth2", "SRV-WEB:eth1"]
     - endpoints: ["ENT-COR-01:eth3", "SRV-VOIP:eth1"]
     - endpoints: ["ENT-COR-01:eth4", "SRV-LDAP:eth1"]
-    # - endpoints: ["ENT-COR-01:eth8", "SRV-LDAP-UI:eth1"]
+    - endpoints: ["ENT-COR-01:eth8", "SRV-LDAP-UI:eth1"]
 
     # Connexion des postes clients sur le Switch Core
     - endpoints: ["ENT-COR-01:eth5", "CLIENT-PC:eth1"]
