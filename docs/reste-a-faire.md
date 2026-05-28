@@ -1,2 +1,4 @@
 - [ ] Bloquer les ports du ldap sur les VLAN (uniquement 389 & 80)
 - [ ] Changer l'ip du DNS de l'AS car hors range attribuée
+- [ ] Ajouter l'ip LDAP dans les record DNS
+- [ ] Bug DHCP qui donne pas le serveur DNS
