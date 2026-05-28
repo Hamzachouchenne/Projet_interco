@@ -364,7 +364,10 @@ topology:
       kind: linux
       image: alpine:latest
       binds:
-        - ./site-primaire/vpn-clients/vpn-nomade.ovpn:/root/vpn-config.ovpn
+        - ./site-primaire/vpn-clients/vpn-nomade.ovpn:/root/vpn-nomade.ovpn
+        - ./site-primaire/vpn-clients/alice.txt:/root/alice.txt
+        - ./site-primaire/vpn-clients/bob.txt:/root/bob.txt
+        - ./site-primaire/vpn-clients/charlie.txt:/root/charlie.txt
       exec:
         - apk update
         - apk add curl
@@ -374,9 +377,6 @@ topology:
         - ip route del default
         - ip route add default via 120.0.2.1
         - sh -c "echo 'nameserver 120.0.100.1' > /etc/resolv.conf"
-        - echo -e "alice.vpn\nvpnpassword1" > alice.txt
-        - echo -e "bob.vpn\nvpnpassword2" > bob.txt
-        - echo -e "charlie.local\nlocalpassword" > charlie.txt
 
   links:
     # Firewall (CE + NAT) → COR-01 / AS-R1
