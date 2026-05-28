@@ -201,9 +201,7 @@ topology:
     ENT-SITE-PRIM-CLIENT-PC-01:
       kind: linux
       image: alpine:latest
-      dns:
-        servers:
-          - 192.168.10.11
+
       exec:
         - apk update
         - apk add curl
@@ -213,9 +211,7 @@ topology:
     ENT-SITE-PRIM-CLIENT-PHONE-01:
       kind: linux
       image: alpine:latest
-      dns:
-        servers:
-          - 192.168.10.11
+
       binds:
         - ./site-primaire/voip-clients/phone1:/root/.baresip
       exec:
@@ -228,9 +224,7 @@ topology:
     ENT-SITE-PRIM-CLIENT-PHONE-02:
       kind: linux
       image: alpine:latest
-      dns:
-        servers:
-          - 192.168.10.11
+ 
       binds:
         - ./site-primaire/voip-clients/phone2:/root/.baresip
       exec:
