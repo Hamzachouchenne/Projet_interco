@@ -187,6 +187,33 @@ topology:
         - ip route add default via 192.168.10.254
         - asterisk -rx "core reload"
         - asterisk
+  
+    ENT-SITE-PRIM-SRV-LDAP:
+      kind: linux
+      image: osixia/openldap:1.5.0
+      cmd: "--copy-service"
+      env:
+        LDAP_ORGANISATION: "AS10 Entreprise"
+        LDAP_DOMAIN: "as10.entreprise"
+        LDAP_ADMIN_PASSWORD: "adminpassword"
+      binds:
+        - ./site-primaire/ldap/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
+      exec:
+        - ip addr add 192.168.10.20/24 dev eth1
+        - ip route del default
+        - ip route add default via 192.168.10.254
+
+    ENT-SITE-PRIM-SRV-LDAP-UI:
+      kind: linux
+      image: osixia/phpldapadmin:0.9.0
+      env:
+        # On dit à l'UI vers quel serveur LDAP pointer
+        PHPLDAPADMIN_LDAP_HOSTS: "192.168.10.20"
+        PHPLDAPADMIN_HTTPS: "false"
+      exec:
+        - ip addr add 192.168.10.21/24 dev eth1
+        - ip route del default
+        - ip route add default via 192.168.10.254
 
     # --- DHCP : sert VLAN 20 (Clients) et VLAN 30 (VoIP) ---
     ENT-SITE-PRIM-SRV-DHCP:
@@ -201,9 +228,7 @@ topology:
     ENT-SITE-PRIM-CLIENT-PC-01:
       kind: linux
       image: alpine:latest
-      dns:
-        servers:
-          - 192.168.10.11
+
       exec:
         - apk update
         - apk add curl
@@ -213,9 +238,7 @@ topology:
     ENT-SITE-PRIM-CLIENT-PHONE-01:
       kind: linux
       image: alpine:latest
-      dns:
-        servers:
-          - 192.168.10.11
+
       binds:
         - ./site-primaire/voip-clients/phone1:/root/.baresip
       exec:
@@ -228,9 +251,7 @@ topology:
     ENT-SITE-PRIM-CLIENT-PHONE-02:
       kind: linux
       image: alpine:latest
-      dns:
-        servers:
-          - 192.168.10.11
+ 
       binds:
         - ./site-primaire/voip-clients/phone2:/root/.baresip
       exec:
@@ -317,6 +338,8 @@ topology:
     - endpoints: ["ENT-SITE-PRIM-SW-DATACENTER:eth4", "ENT-SITE-PRIM-SRV-VOIP:eth1"]
     - endpoints: ["ENT-SITE-PRIM-SW-DATACENTER:eth5", "ENT-SITE-PRIM-SRV-DHCP:eth1"]
     - endpoints: ["ENT-SITE-PRIM-SW-DATACENTER:eth6", "ENT-SITE-PRIM-SRV-DHCP:eth2"]
+    - endpoints: ["ENT-SITE-PRIM-SW-DATACENTER:eth7", "ENT-SITE-PRIM-SRV-LDAP:eth1"]
+    - endpoints: ["ENT-SITE-PRIM-SW-DATACENTER:eth8", "ENT-SITE-PRIM-SRV-LDAP-UI:eth1"]
 
     # SW-DESKOFFICE (VLAN20: PC / VLAN30: Téléphones)
     - endpoints: ["ENT-SITE-PRIM-SW-DESKOFFICE:eth2", "ENT-SITE-PRIM-CLIENT-PC-01:eth1"]
