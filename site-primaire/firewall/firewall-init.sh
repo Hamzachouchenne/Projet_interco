@@ -52,8 +52,22 @@ iptables -A FORWARD -i eth2 -o eth1 -p tcp --dport 80  -j ACCEPT
 iptables -A FORWARD -i eth2 -o eth1 -p tcp --dport 443 -j ACCEPT
 iptables -A FORWARD -i eth2 -o eth1 -p icmp            -j ACCEPT
 
-# VPN Nomade (tun0) ↔ LAN : accès complet pour les utilisateurs nomades
-iptables -A FORWARD -i tun0 -o eth1 -j ACCEPT
+# VPN Nomade (tun0) → LAN : ICMP (ping/traceroute)
+iptables -A FORWARD -i tun0 -o eth1 -p icmp -j ACCEPT
+
+# VPN Nomade (tun0) → VLAN 10 : Web + DNS + LDAP (même niveau que VLAN 20)
+iptables -A FORWARD -i tun0 -o eth1 -d 192.168.10.10 -p tcp --dport 80  -j ACCEPT
+iptables -A FORWARD -i tun0 -o eth1 -d 192.168.10.10 -p tcp --dport 443 -j ACCEPT
+iptables -A FORWARD -i tun0 -o eth1 -d 192.168.10.11 -p udp --dport 53  -j ACCEPT
+iptables -A FORWARD -i tun0 -o eth1 -d 192.168.10.11 -p tcp --dport 53  -j ACCEPT
+iptables -A FORWARD -i tun0 -o eth1 -d 192.168.10.20 -p tcp --dport 389 -j ACCEPT
+iptables -A FORWARD -i tun0 -o eth1 -d 192.168.10.21 -p tcp --dport 80  -j ACCEPT
+# VPN Nomade (tun0) → VLAN 10 : VoIP SIP + RTP (PC/téléphones nomades)
+iptables -A FORWARD -i tun0 -o eth1 -d 192.168.10.12 -p tcp --dport 5060 -j ACCEPT
+iptables -A FORWARD -i tun0 -o eth1 -d 192.168.10.12 -p udp --dport 5060 -j ACCEPT
+iptables -A FORWARD -i tun0 -o eth1 -d 192.168.10.12 -p tcp --dport 5061 -j ACCEPT
+iptables -A FORWARD -i tun0 -o eth1 -d 192.168.10.12 -p udp --dport 16384:32767 -j ACCEPT
+# LAN → VPN Nomade (retour)
 iptables -A FORWARD -i eth1 -o tun0 -j ACCEPT
 
 # VPN Site-à-Site (tun1) ↔ LAN : accès complet depuis/vers le site secondaire
