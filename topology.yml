@@ -367,7 +367,7 @@ topology:
       exec:
         - sh -c "until apk update && apk add --no-cache curl tcpdump tshark openvpn; do sleep 2; done"
         - udhcpc -i eth1 -b -t 20 -T 3 -A 5
-        - sh -c "until ip addr show eth1 | grep -q 'inet '; do sleep 1; done && ip route del default dev eth0"
+        - sh -c "until ip addr show eth1 | grep -q 'inet '; do sleep 1; done && ip route del default dev eth0 && echo 'nameserver 120.0.14.2' > /etc/resolv.conf"
 
     AS-SRV-DHCP:
       kind: linux
