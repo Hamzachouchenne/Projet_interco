@@ -7,13 +7,7 @@ topology:
     # SITE PRIMAIRE
     # ================================================================
 
-    # --- ROUTEUR D'ACCÈS CE (cEOS) ---
-    ENT-SITE-PRIM-RTR-01:
-      kind: arista_ceos
-      image: ceos:4.30.2
-      startup-config: site-primaire/routeur/ENT-SITE-PRIM-RTR-01.cfg
-
-    # --- FIREWALL + VPN ---
+    # --- FIREWALL + VPN + ROUTEUR CE ---
     ENT-SITE-PRIM-FIREWALL:
       kind: linux
       image: alpine:latest
@@ -28,10 +22,11 @@ topology:
       image: alpine:latest
       exec:
         - sysctl -w net.ipv4.ip_forward=1
-        - apk add --no-cache iproute2 iptables
+        - apk add --no-cache iproute2 iptables tcpdump
         # Interface Firewall (untagged)
         - ip addr add 192.168.0.2/30 dev eth1
         - ip link set eth1 up
+        - ip route del default
         - ip route add default via 192.168.0.1
         # Trunks vers SW-DATACENTER (eth2) et SW-DESKOFFICE (eth3)
         - ip link set eth2 up
@@ -244,6 +239,7 @@ topology:
         - apk add curl openldap-clients
         - udhcpc -i eth1 -b -t 20 -T 3 -A 5
         - sh -c "until ip addr show eth1 | grep -q '192.168.20'; do sleep 1; done && ip route add 192.168.10.0/24 via 192.168.20.254 && ip route add 192.168.30.0/24 via 192.168.20.254"
+        - echo "nameserver 192.168.10.11" > /etc/resolv.conf
 
     ENT-SITE-PRIM-CLIENT-PHONE-01:
       kind: linux
@@ -257,6 +253,7 @@ topology:
         - udhcpc -i eth1 -b -t 20 -T 3 -A 5
         - sh -c "until ip addr show eth1 | grep -q '192.168.30'; do sleep 1; done && ip route add 192.168.10.0/24 via 192.168.30.254"
         #- baresip -f /root/.baresip
+        - echo "nameserver 192.168.10.11" > /etc/resolv.conf
 
     ENT-SITE-PRIM-CLIENT-PHONE-02:
       kind: linux
@@ -270,31 +267,67 @@ topology:
         - udhcpc -i eth1 -b -t 20 -T 3 -A 5
         - sh -c "until ip addr show eth1 | grep -q '192.168.30'; do sleep 1; done && ip route add 192.168.10.0/24 via 192.168.30.254"
         #- baresip -f /root/.baresip
+        - echo "nameserver 192.168.10.11" > /etc/resolv.conf
 
     # ================================================================
     # SITE SECONDAIRE
     # ================================================================
 
-    # # --- FIREWALL + VPN client + DHCP ---
-    # ENT-SITE-SECO-FIREWALL:
-    #   kind: linux
-    #   image: alpine:latest
-    #   binds:
-    #     - ./site-secondaire/firewall/:/etc/openvpn/
-    #   exec:
-    #     - sh /etc/openvpn/firewall-init.sh
+    # --- FIREWALL + VPN client ---
+    ENT-SITE-SECO-FIREWALL:
+      kind: linux
+      image: alpine:latest
+      binds:
+        - ./site-secondaire/firewall/:/etc/openvpn/
+      exec:
+        - sh /etc/openvpn/firewall-init.sh
 
-    # # --- COEUR DE RESEAU SITE SECONDAIRE (cEOS) ---
-    # ENT-SITE-SECO-COR-01:
-    #   kind: arista_ceos
-    #   image: ceos:4.30.2
+    # --- SWITCH L3 COEUR + ACL (routeur inter-VLAN) ---
+    ENT-SITE-SECO-COR-01:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - sysctl -w net.ipv4.ip_forward=1
+        - apk add --no-cache iproute2 iptables tcpdump
+        # Interface Firewall (untagged)
+        - ip addr add 192.168.40.2/30 dev eth1
+        - ip link set eth1 up
+        - ip route del default
+        - ip route add default via 192.168.40.1
+        # VLAN 20 (Clients) — bridge eth2 (DHCP) + eth4 (PC)
+        - ip link set eth2 up
+        - ip link set eth4 up
+        - ip link add name br20 type bridge
+        - ip link set eth2 master br20
+        - ip link set eth4 master br20
+        - ip addr add 192.168.60.254/24 dev br20
+        - ip link set br20 up
+        # VLAN 30 (VoIP) — direct eth3 (DHCP)
+        - ip addr add 192.168.70.254/24 dev eth3
+        - ip link set eth3 up
+        # QoS DSCP EF (46) sur trafic VoIP (la sécurité inter-VLAN est au firewall)
+        - iptables -t mangle -A FORWARD -i eth3 -p udp --dport 5060 -j DSCP --set-dscp 46
+        - iptables -t mangle -A FORWARD -i eth3 -p udp --dport 16384:32767 -j DSCP --set-dscp 46
 
-    # # --- CLIENT ---
-    # ENT-SITE-SECO-CLIENT-PC-01:
-    #   kind: linux
-    #   image: alpine:latest
-    #   exec:
-    #     - sh -c "for i in 1 2 3 4 5 6 7 8 9 10; do udhcpc -i eth1 -n -t 5 && break; sleep 5; done"
+    # --- DHCP : sert VLAN 20 (Clients) et VLAN 30 (VoIP) ---
+    ENT-SITE-SECO-SRV-DHCP:
+      kind: linux
+      image: alpine:latest
+      binds:
+        - ./site-secondaire/dhcp/:/etc/dhcp/
+      exec:
+        - sh /etc/dhcp/dhcp-init.sh
+
+    # --- CLIENT ---
+    ENT-SITE-SECO-CLIENT-PC-01:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - apk update
+        - apk add curl
+        - udhcpc -i eth1 -b -t 20 -T 3 -A 5
+        - sh -c "until ip addr show eth1 | grep -q '192.168.60'; do sleep 1; done && ip route add 192.168.10.0/24 via 192.168.60.254 && ip route add 192.168.20.0/24 via 192.168.60.254 && ip route add 192.168.30.0/24 via 192.168.60.254"
+        - echo "nameserver 192.168.10.11" > /etc/resolv.conf
 
     # ================================================================
     # AS 10
@@ -302,17 +335,17 @@ topology:
 
     AS-R1:
       kind: arista_ceos
-      image: ceos:4.30.2
+      image: ceos:4.36.0F
       startup-config: as/routeurs/AS-R1.cfg
 
     AS-R2:
       kind: arista_ceos
-      image: ceos:4.30.2
+      image: ceos:4.36.0F
       startup-config: as/routeurs/AS-R2.cfg
 
     AS-R3:
       kind: arista_ceos
-      image: ceos:4.30.2
+      image: ceos:4.36.0F
       startup-config: as/routeurs/AS-R3.cfg
 
     AS-SRV-DNS:
@@ -322,6 +355,7 @@ topology:
         - ./as/dns/named.conf:/etc/bind/named.conf
         - ./as/dns/db.entreprise.lab:/etc/bind/db.entreprise.lab
       exec:
+        - ip link set eth1 up
         - ip addr add 120.0.100.1/24 dev eth1
         - ip route del default
         - ip route add default via 120.0.100.254
@@ -329,13 +363,22 @@ topology:
     PARTICULIER-ENT:
       kind: linux
       image: alpine:latest
+      binds:
+        - ./site-primaire/vpn-clients/vpn-nomade.ovpn:/root/vpn-config.ovpn
       exec:
         - apk update
         - apk add curl
+        - apk add openvpn
+        - ip addr add 120.0.2.2/30 dev eth1
+        - ip link set eth1 up
+        - ip route del default
+        - ip route add default via 120.0.2.1
+        - sh -c "echo 'nameserver 120.0.100.1' > /etc/resolv.conf"
+        #- openvpn --config /root/vpn-config.ovpn --daemon
 
   links:
-    # CE Router → Firewall → COR-01
-    - endpoints: ["ENT-SITE-PRIM-RTR-01:eth1", "ENT-SITE-PRIM-FIREWALL:eth2"]
+    # Firewall (CE + NAT) → COR-01 / AS-R1
+    - endpoints: ["ENT-SITE-PRIM-FIREWALL:eth2", "AS-R1:eth1"]
     - endpoints: ["ENT-SITE-PRIM-FIREWALL:eth1", "ENT-SITE-PRIM-COR-01:eth1"]
 
     # COR-01 → Switches L2 VLAN-aware (trunks)
@@ -356,8 +399,14 @@ topology:
     - endpoints: ["ENT-SITE-PRIM-SW-DESKOFFICE:eth3", "ENT-SITE-PRIM-CLIENT-PHONE-01:eth1"]
     - endpoints: ["ENT-SITE-PRIM-SW-DESKOFFICE:eth4", "ENT-SITE-PRIM-CLIENT-PHONE-02:eth1"]
 
-    # CE Router → AS-R1
-    - endpoints: ["ENT-SITE-PRIM-RTR-01:eth2", "AS-R1:eth1"]
+    # Site secondaire → AS-R1 eth4
+    - endpoints: ["ENT-SITE-SECO-FIREWALL:eth2", "AS-R1:eth4"]
+    - endpoints: ["ENT-SITE-SECO-FIREWALL:eth1", "ENT-SITE-SECO-COR-01:eth1"]
+
+    # COR-01 → équipements directement (VLAN20: eth2=DHCP, eth4=PC / VLAN30: eth3=DHCP)
+    - endpoints: ["ENT-SITE-SECO-COR-01:eth2", "ENT-SITE-SECO-SRV-DHCP:eth1"]
+    - endpoints: ["ENT-SITE-SECO-COR-01:eth3", "ENT-SITE-SECO-SRV-DHCP:eth2"]
+    - endpoints: ["ENT-SITE-SECO-COR-01:eth4", "ENT-SITE-SECO-CLIENT-PC-01:eth1"]
 
     # AS 10 interne
     - endpoints: ["AS-R1:eth2", "AS-R2:eth1"]
@@ -367,6 +416,5 @@ topology:
     - endpoints: ["AS-R2:eth3", "PARTICULIER-ENT:eth1"]
 
     #ports externes
-    # - endpoints: ["AS-R1:eth4", "macvlan:enp1s0f0"] #entreprise
     # - endpoints: ["AS-R2:eth4","macvlan:enp1s0f1"] #particulier
     # - endpoints: ["AS-R3:eth4","macvlan:enp1s0f2"] #bgp

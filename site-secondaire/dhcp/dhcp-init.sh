@@ -1,16 +1,21 @@
 #!/bin/sh
 # ===================================================================
-# dhcp-init.sh - Serveur DHCP du site secondaire AS13 (AS13-SRV-DHCP)
-# Sert le LAN AS13 : 192.168.50.0/24
+# dhcp-init.sh - Serveur DHCP du site secondaire (ENT-SITE-SECO-SRV-DHCP)
+# Sert VLAN 20 (Clients 192.168.60.0/24) et VLAN 30 (VoIP 192.168.70.0/24)
+# DNS résolu via le site primaire par le tunnel VPN
 # ===================================================================
 
-# --- 1. INTERFACE RÉSEAU ---
-# eth1 = connecté au bridge LAN AS13
-ip addr add 192.168.50.2/24 dev eth1
+# --- 1. INTERFACES RÉSEAU ---
+# eth1 = connecté au switch sur le subnet Clients (VLAN 20)
+ip addr add 192.168.60.252/24 dev eth1
 ip link set eth1 up
 
-# Route par défaut via le firewall AS13
-ip route add default via 192.168.50.1
+# eth2 = connecté au switch sur le subnet VoIP (VLAN 30)
+ip addr add 192.168.70.252/24 dev eth2
+ip link set eth2 up
+
+# Route par défaut via le COR-01 (SVI VLAN 20)
+ip route add default via 192.168.60.254
 
 # --- 2. INSTALLATION DE DNSMASQ ---
 apk update
@@ -20,20 +25,24 @@ apk add --no-cache dnsmasq
 cat > /etc/dnsmasq.conf << 'EOF'
 no-resolv
 
-# Écouter sur le LAN AS13
 interface=eth1
+interface=eth2
 except-interface=lo
 
 # -------------------------------------------------------
-# LAN AS13 - 192.168.50.0/24
+# VLAN 20 - Réseau Clients (192.168.60.0/24)
 # -------------------------------------------------------
-dhcp-range=192.168.50.10,192.168.50.50,255.255.255.0,24h
+dhcp-range=set:vlan20,192.168.60.10,192.168.60.50,255.255.255.0,24h
+dhcp-option=tag:vlan20,option:router,192.168.60.254
+# DNS = SRV-DNS du site primaire, accessible via tunnel VPN
+dhcp-option=tag:vlan20,option:dns-server,192.168.10.11
 
-# Passerelle = AS13-FIREWALL
-dhcp-option=option:router,192.168.50.1
-
-# DNS = AS13-FIREWALL (qui forward vers SRV-DNS AS10 via le tunnel VPN)
-dhcp-option=option:dns-server,192.168.50.1
+# -------------------------------------------------------
+# VLAN 30 - Réseau VoIP (192.168.70.0/24)
+# -------------------------------------------------------
+dhcp-range=set:vlan30,192.168.70.10,192.168.70.50,255.255.255.0,24h
+dhcp-option=tag:vlan30,option:router,192.168.70.254
+dhcp-option=tag:vlan30,option:dns-server,192.168.10.11
 
 dhcp-leasefile=/tmp/dnsmasq.leases
 log-dhcp
@@ -42,4 +51,4 @@ EOF
 # --- 4. DÉMARRAGE ---
 dnsmasq
 
-echo "=== AS13-SRV-DHCP initialisé - LAN 192.168.50.0/24 ==="
+echo "=== SRV-DHCP (Site Secondaire) initialisé - VLAN20 + VLAN30 ==="

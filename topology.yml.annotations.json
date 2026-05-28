@@ -13,10 +13,10 @@
       }
     },
     {
-      "id": "ENT-SITE-PRIM-RTR-01",
+      "id": "ENT-SITE-SECO-FIREWALL",
       "position": {
-        "x": 420,
-        "y": 380
+        "x": 460,
+        "y": 240
       }
     },
     {
@@ -178,6 +178,34 @@
       "position": {
         "x": 80,
         "y": 760
+      }
+    },
+    {
+      "id": "ENT-SITE-SECO-CLIENT-PC-01",
+      "position": {
+        "x": 360,
+        "y": 40
+      }
+    },
+    {
+      "id": "ENT-SITE-SECO-SRV-DHCP",
+      "position": {
+        "x": 220,
+        "y": 160
+      }
+    },
+    {
+      "id": "ENT-SITE-SECO-SW-01",
+      "position": {
+        "x": 360,
+        "y": 40
+      }
+    },
+    {
+      "id": "ENT-SITE-SECO-COR-01",
+      "position": {
+        "x": 360,
+        "y": 160
       }
     }
   ],
