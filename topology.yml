@@ -87,7 +87,7 @@ topology:
         LDAP_DOMAIN: "as10.entreprise"
         LDAP_ADMIN_PASSWORD: "adminpassword"
       binds:
-        - ./ldap-config/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
+        - ./site-primaire/ldap/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
       exec:
         - ip addr add 192.168.10.20/24 dev eth1
         - ip route del default
