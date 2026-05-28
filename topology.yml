@@ -241,7 +241,7 @@ topology:
 
       exec:
         - apk update
-        - apk add curl
+        - apk add curl openldap-clients
         - udhcpc -i eth1 -b -t 20 -T 3 -A 5
         - sh -c "until ip addr show eth1 | grep -q '192.168.20'; do sleep 1; done && ip route add 192.168.10.0/24 via 192.168.20.254 && ip route add 192.168.30.0/24 via 192.168.20.254"
 
