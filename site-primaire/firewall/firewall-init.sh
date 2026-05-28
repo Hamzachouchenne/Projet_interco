@@ -9,7 +9,7 @@ sysctl -w net.ipv4.ip_forward=1
 
 # --- 2. INSTALLATION DES PAQUETS ---
 apk update
-apk add --no-cache iptables openvpn openvpn-auth-ldap tcpdump
+apk add --no-cache iptables openvpn openvpn-auth-ldap tcpdump curl tshark
 
 # --- 3. INTERFACES RÉSEAU ---
 ip addr add 192.168.0.1/30 dev eth1   # LAN -> COR-01

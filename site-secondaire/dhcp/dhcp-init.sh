@@ -19,7 +19,7 @@ ip route add default via 192.168.60.254
 
 # --- 2. INSTALLATION DE DNSMASQ ---
 apk update
-apk add --no-cache dnsmasq
+apk add --no-cache dnsmasq tcpdump curl tshark
 
 # --- 3. CONFIGURATION DNSMASQ ---
 cat > /etc/dnsmasq.conf << 'EOF'
