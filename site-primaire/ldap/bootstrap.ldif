@@ -1,0 +1,95 @@
+# =======================================================================
+# BRANCHES DE BASE
+# =======================================================================
+dn: ou=users,dc=as10,dc=entreprise
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=as10,dc=entreprise
+objectClass: organizationalUnit
+ou: groups
+
+# =======================================================================
+# GROUPES (ACL RÉSEAU)
+# =======================================================================
+# Groupe par défaut pour tous les employés (Accès local interne)
+dn: cn=tech,ou=groups,dc=as10,dc=entreprise
+objectClass: posixGroup
+cn: tech
+gidNumber: 5000
+memberUid: jean.dupont
+memberUid: alice.vpn
+memberUid: bob.vpn
+memberUid: charlie.local
+
+# Groupe spécifique pour l'autorisation VPN
+# Seuls les membres déclarés ici pourront monter le tunnel VPN
+dn: cn=vpn-users,ou=groups,dc=as10,dc=entreprise
+objectClass: posixGroup
+cn: vpn-users
+gidNumber: 5001
+memberUid: alice.vpn
+memberUid: bob.vpn
+
+# =======================================================================
+# UTILISATEURS
+# =======================================================================
+# 1. Utilisateur existant (Jean)
+dn: uid=jean.dupont,ou=users,dc=as10,dc=entreprise
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: jean.dupont
+sn: Dupont
+givenName: Jean
+cn: Jean Dupont
+uidNumber: 10001
+gidNumber: 5000
+homeDirectory: /home/jean.dupont
+loginShell: /bin/sh
+userPassword: password123
+
+# 2. Premier utilisateur AUTORISÉ VPN (Alice)
+dn: uid=alice.vpn,ou=users,dc=as10,dc=entreprise
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: alice.vpn
+sn: Martin
+givenName: Alice
+cn: Alice Martin
+uidNumber: 10002
+gidNumber: 5000
+homeDirectory: /home/alice.vpn
+loginShell: /bin/sh
+userPassword: vpnpassword1
+
+# 3. Deuxième utilisateur AUTORISÉ VPN (Bob)
+dn: uid=bob.vpn,ou=users,dc=as10,dc=entreprise
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: bob.vpn
+sn: Bernard
+givenName: Bob
+cn: Bob Bernard
+uidNumber: 10003
+gidNumber: 5000
+homeDirectory: /home/bob.vpn
+loginShell: /bin/sh
+userPassword: vpnpassword2
+
+# 4. Utilisateur INTERDIT de VPN / Local uniquement (Charlie)
+dn: uid=charlie.local,ou=users,dc=as10,dc=entreprise
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: charlie.local
+sn: Durand
+givenName: Charlie
+cn: Charlie Durand
+uidNumber: 10004
+gidNumber: 5000
+homeDirectory: /home/charlie.local
+loginShell: /bin/sh
+userPassword: localpassword

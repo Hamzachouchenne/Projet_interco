@@ -71,8 +71,8 @@
     {
       "id": "ENT-SITE-PRIM-SRV-WEB",
       "position": {
-        "x": 60,
-        "y": 680
+        "x": 0,
+        "y": 660
       }
     },
     {
@@ -141,8 +141,8 @@
     {
       "id": "ENT-SITE-PRIM-SRV-DHCP",
       "position": {
-        "x": 220,
-        "y": 680
+        "x": 280,
+        "y": 660
       }
     },
     {
@@ -153,10 +153,10 @@
       }
     },
     {
-      "id": "ENT-SITE-PRIM-SW-DATA",
+      "id": "ENT-SITE-PRIM-SRV-LDAP",
       "position": {
-        "x": 140,
-        "y": 200
+        "x": 200,
+        "y": 760
       }
     },
     {
@@ -171,6 +171,13 @@
       "position": {
         "x": 0,
         "y": 380
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-SRV-LDAP-UI",
+      "position": {
+        "x": 80,
+        "y": 760
       }
     }
   ],
