@@ -335,17 +335,17 @@ topology:
 
     AS-R1:
       kind: arista_ceos
-      image: ceos:4.36.0F
+      image: ceos:4.30.2
       startup-config: as/routeurs/AS-R1.cfg
 
     AS-R2:
       kind: arista_ceos
-      image: ceos:4.36.0F
+      image: ceos:4.30.2
       startup-config: as/routeurs/AS-R2.cfg
 
     AS-R3:
       kind: arista_ceos
-      image: ceos:4.36.0F
+      image: ceos:4.30.2
       startup-config: as/routeurs/AS-R3.cfg
 
     AS-SRV-DNS:
@@ -374,7 +374,9 @@ topology:
         - ip route del default
         - ip route add default via 120.0.2.1
         - sh -c "echo 'nameserver 120.0.100.1' > /etc/resolv.conf"
-        #- openvpn --config /root/vpn-config.ovpn --daemon
+        - echo -e "alice.vpn\nvpnpassword1" > alice.txt
+        - echo -e "bob.vpn\nvpnpassword2" > bob.txt
+        - echo -e "charlie.local\nlocalpassword" > charlie.txt
 
   links:
     # Firewall (CE + NAT) → COR-01 / AS-R1

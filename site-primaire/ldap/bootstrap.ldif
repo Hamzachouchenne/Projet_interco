@@ -63,6 +63,7 @@ gidNumber: 5000
 homeDirectory: /home/alice.vpn
 loginShell: /bin/sh
 userPassword: vpnpassword1
+title: vpn-user
 
 # 3. Deuxième utilisateur AUTORISÉ VPN (Bob)
 dn: uid=bob.vpn,ou=users,dc=as10,dc=entreprise
@@ -78,6 +79,7 @@ gidNumber: 5000
 homeDirectory: /home/bob.vpn
 loginShell: /bin/sh
 userPassword: vpnpassword2
+title: vpn-user
 
 # 4. Utilisateur INTERDIT de VPN / Local uniquement (Charlie)
 dn: uid=charlie.local,ou=users,dc=as10,dc=entreprise
