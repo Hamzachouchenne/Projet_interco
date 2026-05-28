@@ -8,8 +8,8 @@
     {
       "id": "ENT-FIREWALL",
       "position": {
-        "x": 260,
-        "y": 360
+        "x": 300,
+        "y": 380
       }
     },
     {
@@ -22,36 +22,78 @@
     {
       "id": "SRV-WEB",
       "position": {
-        "x": 540,
-        "y": 460
+        "x": 600,
+        "y": 360
       }
     },
     {
       "id": "SRV-VOIP",
       "position": {
-        "x": 400,
-        "y": 180
+        "x": 580,
+        "y": 260
       }
     },
     {
       "id": "SRV-DNS",
       "position": {
-        "x": 400,
-        "y": 520
+        "x": -260,
+        "y": 360
       }
     },
     {
       "id": "CLIENT-PC",
       "position": {
-        "x": 540,
-        "y": 240
+        "x": 340,
+        "y": 80
       }
     },
     {
-      "id": "CLIENT-PHONE",
+      "id": "SRV-LDAP",
       "position": {
-        "x": 580,
+        "x": 500,
+        "y": 200
+      }
+    },
+    {
+      "id": "PARTICULIER-ENT",
+      "position": {
+        "x": -500,
+        "y": 300
+      }
+    },
+    {
+      "id": "AS-R3",
+      "position": {
+        "x": -140,
         "y": 340
+      }
+    },
+    {
+      "id": "AS-R2",
+      "position": {
+        "x": -360,
+        "y": 200
+      }
+    },
+    {
+      "id": "AS-R1",
+      "position": {
+        "x": -180,
+        "y": 100
+      }
+    },
+    {
+      "id": "CLIENT-PHONE2",
+      "position": {
+        "x": 220,
+        "y": 80
+      }
+    },
+    {
+      "id": "CLIENT-PHONE1",
+      "position": {
+        "x": 140,
+        "y": 160
       }
     }
   ],

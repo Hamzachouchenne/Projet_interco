@@ -81,13 +81,13 @@ topology:
     SRV-LDAP:
       kind: linux
       image: osixia/openldap:1.5.0
+      cmd: "--copy-service"
       env:
         LDAP_ORGANISATION: "AS10 Entreprise"
         LDAP_DOMAIN: "as10.entreprise"
         LDAP_ADMIN_PASSWORD: "adminpassword"
-        LDAP_CUSTOM_LDIF_DIRS: "/as10-config"
       binds:
-        - ./ldap-config:/as10-config
+        - ./ldap-config/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
       exec:
         - ip addr add 192.168.10.20/24 dev eth1
         - ip route del default
