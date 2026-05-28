@@ -5,7 +5,10 @@
 # Les serveurs (VLAN 10) conservent leurs IPs statiques
 # ===================================================================
 
-# --- 1. INTERFACES RÉSEAU ---
+# --- 1. INSTALLATION DE DNSMASQ (avant de toucher aux routes) ---
+until apk update && apk add --no-cache dnsmasq tcpdump curl tshark; do sleep 2; done
+
+# --- 2. INTERFACES RÉSEAU ---
 # eth1 = connecté au switch Arista sur le subnet Clients (192.168.20.x)
 ip addr add 192.168.20.200/24 dev eth1
 ip link set eth1 up
@@ -15,11 +18,8 @@ ip addr add 192.168.30.200/24 dev eth2
 ip link set eth2 up
 
 # Route par défaut via le switch (SVI VLAN 20)
+ip route del default dev eth0
 ip route add default via 192.168.20.254
-
-# --- 2. INSTALLATION DE DNSMASQ ---
-apk update
-apk add --no-cache dnsmasq tcpdump curl tshark
 
 # --- 3. CONFIGURATION DNSMASQ ---
 cat > /etc/dnsmasq.conf << 'EOF'

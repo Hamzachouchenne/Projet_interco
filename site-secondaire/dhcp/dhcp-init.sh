@@ -5,7 +5,10 @@
 # DNS résolu via le site primaire par le tunnel VPN
 # ===================================================================
 
-# --- 1. INTERFACES RÉSEAU ---
+# --- 1. INSTALLATION DE DNSMASQ (avant de toucher aux routes) ---
+until apk update && apk add --no-cache dnsmasq tcpdump curl tshark; do sleep 2; done
+
+# --- 2. INTERFACES RÉSEAU ---
 # eth1 = connecté au switch sur le subnet Clients (VLAN 20)
 ip addr add 192.168.60.252/24 dev eth1
 ip link set eth1 up
@@ -15,11 +18,8 @@ ip addr add 192.168.70.252/24 dev eth2
 ip link set eth2 up
 
 # Route par défaut via le COR-01 (SVI VLAN 20)
+ip route del default dev eth0
 ip route add default via 192.168.60.254
-
-# --- 2. INSTALLATION DE DNSMASQ ---
-apk update
-apk add --no-cache dnsmasq tcpdump curl tshark
 
 # --- 3. CONFIGURATION DNSMASQ ---
 cat > /etc/dnsmasq.conf << 'EOF'

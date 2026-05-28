@@ -22,7 +22,7 @@ topology:
       image: alpine:latest
       exec:
         - sysctl -w net.ipv4.ip_forward=1
-        - apk add --no-cache iproute2 iptables tcpdump curl tshark
+        - sh -c "until apk add --no-cache iproute2 iptables tcpdump curl tshark; do sleep 2; done"
         # Interface Firewall (untagged)
         - ip addr add 192.168.0.2/30 dev eth1
         - ip link set eth1 up
@@ -93,7 +93,7 @@ topology:
       kind: linux
       image: alpine:latest
       exec:
-        - apk add --no-cache iproute2 tcpdump curl tshark
+        - sh -c "until apk add --no-cache iproute2 tcpdump curl tshark; do sleep 2; done"
         - ip link add br0 type bridge vlan_filtering 1
         - ip link set eth1 master br0
         - ip link set eth2 master br0
@@ -135,7 +135,7 @@ topology:
       kind: linux
       image: alpine:latest
       exec:
-        - apk add --no-cache iproute2 tcpdump curl tshark
+        - sh -c "until apk add --no-cache iproute2 tcpdump curl tshark; do sleep 2; done"
         - ip link add br0 type bridge vlan_filtering 1
         - ip link set eth1 master br0
         - ip link set eth2 master br0
@@ -161,8 +161,7 @@ topology:
       kind: linux
       image: alpine:latest
       exec:
-        - apk update
-        - apk add apache2 tcpdump curl tshark
+        - sh -c "until apk update && apk add --no-cache apache2 tcpdump curl tshark; do sleep 2; done"
         - mkdir -p /run/apache2
         - httpd -k start
         - ip addr add 192.168.10.10/24 dev eth1
@@ -178,7 +177,7 @@ topology:
         - ./site-primaire/dns/named.conf:/etc/bind/named.conf
         - ./site-primaire/dns/db.entreprise.lab:/etc/bind/db.entreprise.lab
       exec:
-        - apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark
+        - sh -c "until apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark; do sleep 2; done"
         - ip addr add 192.168.10.11/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.10.254
@@ -190,8 +189,7 @@ topology:
         - ./site-primaire/voip:/etc/asterisk
       cmd: sleep infinity
       exec:
-        - apt-get update
-        - apt-get install -y iproute2 tcpdump curl tshark
+        - sh -c "until apt-get update && apt-get install -y iproute2 tcpdump curl tshark; do sleep 2; done"
         - ip addr add 192.168.10.12/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.10.254
@@ -209,7 +207,7 @@ topology:
       binds:
         - ./site-primaire/ldap/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
       exec:
-        - apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark
+        - sh -c "until apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark; do sleep 2; done"
         - ip addr add 192.168.10.20/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.10.254
@@ -222,7 +220,7 @@ topology:
         PHPLDAPADMIN_LDAP_HOSTS: "192.168.10.20"
         PHPLDAPADMIN_HTTPS: "false"
       exec:
-        - apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark
+        - sh -c "until apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark; do sleep 2; done"
         - ip addr add 192.168.10.21/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.10.254
@@ -242,9 +240,8 @@ topology:
       image: alpine:latest
 
       exec:
-        - apk update
-        - apk add curl openldap-clients tcpdump tshark
-        - sh -c "udhcpc -i eth1 -n -q -t 20 -T 3 && ip route add 192.168.10.0/24 via 192.168.20.254 && ip route add 192.168.30.0/24 via 192.168.20.254 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
+        - sh -c "until apk update && apk add --no-cache curl openldap-clients tcpdump tshark; do sleep 2; done"
+        - sh -c "udhcpc -i eth1 -n -q -t 20 -T 3 && ip route del default dev eth0 && ip route add 192.168.10.0/24 via 192.168.20.254 && ip route add 192.168.30.0/24 via 192.168.20.254 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
 
     ENT-SITE-PRIM-CLIENT-PHONE-01:
       kind: linux
@@ -253,23 +250,21 @@ topology:
       binds:
         - ./site-primaire/voip-clients/phone1:/root/.baresip
       exec:
-        - apk update
+        - sh -c "until apk update && apk add --no-cache tcpdump curl tshark; do sleep 2; done"
         - apk add baresip --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
-        - apk add --no-cache tcpdump curl tshark
-        - sh -c "udhcpc -i eth1 -n -q -t 20 -T 3 && ip route add 192.168.10.0/24 via 192.168.30.254 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
+        - sh -c "udhcpc -i eth1 -n -q -t 20 -T 3 && ip route del default dev eth0 && ip route add 192.168.10.0/24 via 192.168.30.254 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
         #- baresip -f /root/.baresip
 
     ENT-SITE-PRIM-CLIENT-PHONE-02:
       kind: linux
       image: alpine:latest
- 
+
       binds:
         - ./site-primaire/voip-clients/phone2:/root/.baresip
       exec:
-        - apk update
+        - sh -c "until apk update && apk add --no-cache tcpdump curl tshark; do sleep 2; done"
         - apk add baresip --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
-        - apk add --no-cache tcpdump curl tshark
-        - sh -c "udhcpc -i eth1 -n -q -t 20 -T 3 && ip route add 192.168.10.0/24 via 192.168.30.254 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
+        - sh -c "udhcpc -i eth1 -n -q -t 20 -T 3 && ip route del default dev eth0 && ip route add 192.168.10.0/24 via 192.168.30.254 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
         #- baresip -f /root/.baresip
 
     # ================================================================
@@ -291,7 +286,7 @@ topology:
       image: alpine:latest
       exec:
         - sysctl -w net.ipv4.ip_forward=1
-        - apk add --no-cache iproute2 iptables tcpdump curl tshark
+        - sh -c "until apk add --no-cache iproute2 iptables tcpdump curl tshark; do sleep 2; done"
         # Interface Firewall (untagged)
         - ip addr add 192.168.40.2/30 dev eth1
         - ip link set eth1 up
@@ -326,9 +321,8 @@ topology:
       kind: linux
       image: alpine:latest
       exec:
-        - apk update
-        - apk add curl tcpdump tshark
-        - sh -c "udhcpc -i eth1 -n -q -t 20 -T 3 && ip route add 192.168.10.0/24 via 192.168.60.254 && ip route add 192.168.20.0/24 via 192.168.60.254 && ip route add 192.168.30.0/24 via 192.168.60.254 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
+        - sh -c "until apk update && apk add --no-cache curl tcpdump tshark; do sleep 2; done"
+        - sh -c "udhcpc -i eth1 -n -q -t 20 -T 3 && ip route del default dev eth0 && ip route add 192.168.10.0/24 via 192.168.60.254 && ip route add 192.168.20.0/24 via 192.168.60.254 && ip route add 192.168.30.0/24 via 192.168.60.254 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
 
     # ================================================================
     # AS 10
@@ -356,11 +350,11 @@ topology:
         - ./as/dns/named.conf:/etc/bind/named.conf
         - ./as/dns/db.entreprise.lab:/etc/bind/db.entreprise.lab
       exec:
-        - apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark
+        - sh -c "until apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark; do sleep 2; done"
         - ip link set eth1 up
-        - ip addr add 120.0.100.1/24 dev eth1
+        - ip addr add 120.0.14.2/24 dev eth1
         - ip route del default
-        - ip route add default via 120.0.100.254
+        - ip route add default via 120.0.14.1
 
     PARTICULIER-ENT:
       kind: linux
@@ -371,14 +365,31 @@ topology:
         - ./site-primaire/vpn-clients/bob.txt:/root/bob.txt
         - ./site-primaire/vpn-clients/charlie.txt:/root/charlie.txt
       exec:
-        - apk update
-        - apk add curl tcpdump tshark
-        - apk add openvpn
-        - ip addr add 120.0.2.2/30 dev eth1
+        - sh -c "until apk update && apk add --no-cache curl tcpdump tshark openvpn; do sleep 2; done"
+        - udhcpc -i eth1 -b -t 20 -T 3 -A 5
+        - sh -c "until ip addr show eth1 | grep -q 'inet '; do sleep 1; done && ip route del default dev eth0"
+
+    AS-SRV-DHCP:
+      kind: linux
+      image: alpine:latest
+      binds:
+        - ./as/dhcp-public/:/etc/dhcp/
+      exec:
+        - sh /etc/dhcp/dhcp-init.sh
+
+    AS-SW-SERVERS:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - sh -c "until apk add --no-cache iproute2; do sleep 2; done"
+        - ip link add br0 type bridge
         - ip link set eth1 up
-        - ip route del default
-        - ip route add default via 120.0.2.1
-        - sh -c "echo 'nameserver 120.0.100.1' > /etc/resolv.conf"
+        - ip link set eth2 up
+        - ip link set eth3 up
+        - ip link set eth1 master br0
+        - ip link set eth2 master br0
+        - ip link set eth3 master br0
+        - ip link set br0 up
 
   links:
     # Firewall (CE + NAT) → COR-01 / AS-R1
@@ -416,7 +427,9 @@ topology:
     - endpoints: ["AS-R1:eth2", "AS-R2:eth1"]
     - endpoints: ["AS-R1:eth3", "AS-R3:eth1"]
     - endpoints: ["AS-R2:eth2", "AS-R3:eth2"]
-    - endpoints: ["AS-R3:eth3", "AS-SRV-DNS:eth1"]
+    - endpoints: ["AS-R3:eth3", "AS-SW-SERVERS:eth1"]
+    - endpoints: ["AS-SW-SERVERS:eth2", "AS-SRV-DNS:eth1"]
+    - endpoints: ["AS-SW-SERVERS:eth3", "AS-SRV-DHCP:eth1"]
     - endpoints: ["AS-R2:eth3", "PARTICULIER-ENT:eth1"]
 
     #ports externes
