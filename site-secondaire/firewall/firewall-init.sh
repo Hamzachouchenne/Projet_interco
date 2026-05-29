@@ -7,11 +7,7 @@
 # --- 1. ROUTAGE IP ---
 sysctl -w net.ipv4.ip_forward=1
 
-# --- 2. INSTALLATION DES PAQUETS ---
-apk update
-apk add --no-cache iptables openvpn tcpdump curl tshark
-
-# --- 3. INTERFACES RÉSEAU ---
+# --- 2. INTERFACES RÉSEAU ---
 ip addr add 192.168.40.1/30 dev eth1   # LAN -> COR-01
 ip link set eth1 up
 ip addr add 120.0.1.6/30 dev eth2      # WAN -> AS-R1 eth4

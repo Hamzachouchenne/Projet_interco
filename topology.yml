@@ -10,7 +10,7 @@ topology:
     # --- FIREWALL + VPN + ROUTEUR CE ---
     ENT-SITE-PRIM-FIREWALL:
       kind: linux
-      image: alpine:latest
+      image: alpine-vpn-server:local
       binds:
         - ./site-primaire/firewall/:/etc/openvpn/
       exec:
@@ -19,10 +19,9 @@ topology:
     # --- SWITCH L3 COEUR + ACL (routeur inter-VLAN, subinterfaces) ---
     ENT-SITE-PRIM-COR-01:
       kind: linux
-      image: alpine:latest
+      image: alpine-base:local
       exec:
         - sysctl -w net.ipv4.ip_forward=1
-        - sh -c "until apk add --no-cache iproute2 iptables tcpdump curl tshark; do sleep 2; done"
         # Interface Firewall (untagged)
         - ip addr add 192.168.0.2/30 dev eth1
         - ip link set eth1 up
@@ -91,9 +90,8 @@ topology:
     # --- SWITCHES L2 VLAN-AWARE ---
     ENT-SITE-PRIM-SW-DATACENTER:
       kind: linux
-      image: alpine:latest
+      image: alpine-base:local
       exec:
-        - sh -c "until apk add --no-cache iproute2 tcpdump curl tshark; do sleep 2; done"
         - ip link add br0 type bridge vlan_filtering 1
         - ip link set eth1 master br0
         - ip link set eth2 master br0
@@ -133,9 +131,8 @@ topology:
 
     ENT-SITE-PRIM-SW-DESKOFFICE:
       kind: linux
-      image: alpine:latest
+      image: alpine-base:local
       exec:
-        - sh -c "until apk add --no-cache iproute2 tcpdump curl tshark; do sleep 2; done"
         - ip link add br0 type bridge vlan_filtering 1
         - ip link set eth1 master br0
         - ip link set eth2 master br0
@@ -159,9 +156,8 @@ topology:
     # --- SERVEURS (IPs statiques) ---
     ENT-SITE-PRIM-SRV-WEB:
       kind: linux
-      image: alpine:latest
+      image: alpine-web:local
       exec:
-        - sh -c "until apk update && apk add --no-cache apache2 tcpdump curl tshark; do sleep 2; done"
         - mkdir -p /run/apache2
         - httpd -k start
         - ip addr add 192.168.10.10/24 dev eth1
@@ -172,33 +168,31 @@ topology:
 
     ENT-SITE-PRIM-SRV-DNS:
       kind: linux
-      image: ubuntu/bind9:latest
+      image: bind9-tools:local
       binds:
         - ./site-primaire/dns/named.conf:/etc/bind/named.conf
         - ./site-primaire/dns/db.entreprise.lab:/etc/bind/db.entreprise.lab
       exec:
-        - sh -c "until apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark; do sleep 2; done"
         - ip addr add 192.168.10.11/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.10.254
 
     ENT-SITE-PRIM-SRV-VOIP:
       kind: linux
-      image: andrius/asterisk:latest
+      image: asterisk-tools:local
       binds:
         - ./site-primaire/voip:/etc/asterisk
       cmd: sleep infinity
       exec:
-        - sh -c "until apt-get update && apt-get install -y iproute2 tcpdump curl tshark; do sleep 2; done"
         - ip addr add 192.168.10.12/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.10.254
         - asterisk -rx "core reload"
         - asterisk
-  
+
     ENT-SITE-PRIM-SRV-LDAP:
       kind: linux
-      image: osixia/openldap:1.5.0
+      image: openldap-tools:local
       cmd: "--copy-service"
       env:
         LDAP_ORGANISATION: "AS10 Entreprise"
@@ -207,20 +201,17 @@ topology:
       binds:
         - ./site-primaire/ldap/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
       exec:
-        - sh -c "until apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark; do sleep 2; done"
         - ip addr add 192.168.10.20/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.10.254
 
     ENT-SITE-PRIM-SRV-LDAP-UI:
       kind: linux
-      image: osixia/phpldapadmin:0.9.0
+      image: phpldapadmin-tools:local
       env:
-        # On dit à l'UI vers quel serveur LDAP pointer
         PHPLDAPADMIN_LDAP_HOSTS: "192.168.10.20"
         PHPLDAPADMIN_HTTPS: "false"
       exec:
-        - sh -c "until apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark; do sleep 2; done"
         - ip addr add 192.168.10.21/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.10.254
@@ -228,7 +219,7 @@ topology:
     # --- DHCP : sert VLAN 20 (Clients) et VLAN 30 (VoIP) ---
     ENT-SITE-PRIM-SRV-DHCP:
       kind: linux
-      image: alpine:latest
+      image: alpine-dhcp:local
       binds:
         - ./site-primaire/dhcp/:/etc/dhcp/
       exec:
@@ -237,35 +228,27 @@ topology:
     # --- CLIENTS (IP via DHCP) ---
     ENT-SITE-PRIM-CLIENT-PC-01:
       kind: linux
-      image: alpine:latest
-
+      image: alpine-client:local
       exec:
-        - sh -c "until apk update && apk add --no-cache curl openldap-clients tcpdump tshark; do sleep 2; done"
         - udhcpc -i eth1 -b -t 20 -T 3 -A 5
         - sh -c "until ip addr show eth1 | grep -q 'inet '; do sleep 1; done && ip route del default dev eth0 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
 
     ENT-SITE-PRIM-CLIENT-PHONE-01:
       kind: linux
-      image: alpine:latest
-
+      image: alpine-phone:local
       binds:
         - ./site-primaire/voip-clients/phone1:/root/.baresip
       exec:
-        - sh -c "until apk update && apk add --no-cache tcpdump curl tshark; do sleep 2; done"
-        - apk add baresip --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
         - udhcpc -i eth1 -b -t 20 -T 3 -A 5
         - sh -c "until ip addr show eth1 | grep -q 'inet '; do sleep 1; done && ip route del default dev eth0 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
         #- baresip -f /root/.baresip
 
     ENT-SITE-PRIM-CLIENT-PHONE-02:
       kind: linux
-      image: alpine:latest
-
+      image: alpine-phone:local
       binds:
         - ./site-primaire/voip-clients/phone2:/root/.baresip
       exec:
-        - sh -c "until apk update && apk add --no-cache tcpdump curl tshark; do sleep 2; done"
-        - apk add baresip --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main/ --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
         - udhcpc -i eth1 -b -t 20 -T 3 -A 5
         - sh -c "until ip addr show eth1 | grep -q 'inet '; do sleep 1; done && ip route del default dev eth0 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
         #- baresip -f /root/.baresip
@@ -277,7 +260,7 @@ topology:
     # --- FIREWALL + VPN client ---
     ENT-SITE-SECO-FIREWALL:
       kind: linux
-      image: alpine:latest
+      image: alpine-client:local
       binds:
         - ./site-secondaire/firewall/:/etc/openvpn/
       exec:
@@ -286,10 +269,9 @@ topology:
     # --- SWITCH L3 COEUR + ACL (routeur inter-VLAN) ---
     ENT-SITE-SECO-COR-01:
       kind: linux
-      image: alpine:latest
+      image: alpine-base:local
       exec:
         - sysctl -w net.ipv4.ip_forward=1
-        - sh -c "until apk add --no-cache iproute2 iptables tcpdump curl tshark; do sleep 2; done"
         # Interface Firewall (untagged)
         - ip addr add 192.168.40.2/30 dev eth1
         - ip link set eth1 up
@@ -313,7 +295,7 @@ topology:
     # --- DHCP : sert VLAN 20 (Clients) et VLAN 30 (VoIP) ---
     ENT-SITE-SECO-SRV-DHCP:
       kind: linux
-      image: alpine:latest
+      image: alpine-dhcp:local
       binds:
         - ./site-secondaire/dhcp/:/etc/dhcp/
       exec:
@@ -322,9 +304,8 @@ topology:
     # --- CLIENT ---
     ENT-SITE-SECO-CLIENT-PC-01:
       kind: linux
-      image: alpine:latest
+      image: alpine-client:local
       exec:
-        - sh -c "until apk update && apk add --no-cache curl tcpdump tshark; do sleep 2; done"
         - udhcpc -i eth1 -b -t 20 -T 3 -A 5
         - sh -c "until ip addr show eth1 | grep -q 'inet '; do sleep 1; done && ip route del default dev eth0 && echo 'nameserver 192.168.10.11' > /etc/resolv.conf"
 
@@ -349,12 +330,11 @@ topology:
 
     AS-SRV-DNS:
       kind: linux
-      image: ubuntu/bind9:latest
+      image: bind9-tools:local
       binds:
         - ./as/dns/named.conf:/etc/bind/named.conf
         - ./as/dns/db.entreprise.lab:/etc/bind/db.entreprise.lab
       exec:
-        - sh -c "until apt-get update -qq && apt-get install -y --no-install-recommends tcpdump curl tshark; do sleep 2; done"
         - ip link set eth1 up
         - ip addr add 120.0.14.2/24 dev eth1
         - ip route del default
@@ -362,20 +342,19 @@ topology:
 
     PARTICULIER-ENT:
       kind: linux
-      image: alpine:latest
+      image: alpine-client:local
       binds:
         - ./site-primaire/vpn-clients/vpn-nomade.ovpn:/root/vpn-nomade.ovpn
         - ./site-primaire/vpn-clients/alice.txt:/root/alice.txt
         - ./site-primaire/vpn-clients/bob.txt:/root/bob.txt
         - ./site-primaire/vpn-clients/charlie.txt:/root/charlie.txt
       exec:
-        - sh -c "until apk update && apk add --no-cache curl tcpdump tshark openvpn; do sleep 2; done"
         - udhcpc -i eth1 -b -t 20 -T 3 -A 5
         - sh -c "until ip addr show eth1 | grep -q 'inet '; do sleep 1; done && ip route del default dev eth0 && echo 'nameserver 120.0.14.2' > /etc/resolv.conf"
 
     AS-SRV-DHCP:
       kind: linux
-      image: alpine:latest
+      image: alpine-dhcp:local
       binds:
         - ./as/dhcp-public/:/etc/dhcp/
       exec:
@@ -383,9 +362,8 @@ topology:
 
     AS-SW-SERVERS:
       kind: linux
-      image: alpine:latest
+      image: alpine-base:local
       exec:
-        - sh -c "until apk add --no-cache iproute2; do sleep 2; done"
         - ip link add br0 type bridge
         - ip link set eth1 up
         - ip link set eth2 up
@@ -437,5 +415,6 @@ topology:
     - endpoints: ["AS-R2:eth3", "PARTICULIER-ENT:eth1"]
 
     #ports externes
-    # - endpoints: ["AS-R2:eth4","macvlan:enp1s0f1"] #particulier
-    # - endpoints: ["AS-R3:eth4","macvlan:enp1s0f2"] #bgp
+    # - endpoints: ["AS-R2:eth4","macvlan:enp1s0f1"] # particulier
+    # - endpoints: ["AS-R3:eth4","macvlan:enp1s0f2"] # bgp
+    # - endpoints: ["ENT-SITE-SECO-FIREWALL:eth2","macvlan:enp1s0f3"] # site secondaire

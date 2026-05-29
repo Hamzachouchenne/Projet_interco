@@ -5,10 +5,7 @@
 # DNS résolu via le site primaire par le tunnel VPN
 # ===================================================================
 
-# --- 1. INSTALLATION DE DNSMASQ (avant de toucher aux routes) ---
-until apk update && apk add --no-cache dnsmasq tcpdump curl tshark; do sleep 2; done
-
-# --- 2. INTERFACES RÉSEAU ---
+# --- 1. INTERFACES RÉSEAU ---
 # eth1 = connecté au switch sur le subnet Clients (VLAN 20)
 ip addr add 192.168.60.252/24 dev eth1
 ip link set eth1 up
