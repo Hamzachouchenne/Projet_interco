@@ -373,6 +373,19 @@ topology:
         - ip link set eth3 master br0
         - ip link set br0 up
 
+    AS-SW-PUBLIC:
+      kind: linux
+      image: alpine-base:local
+      exec:
+        - ip link add br0 type bridge
+        - ip link set eth1 up
+        - ip link set eth2 up
+        - ip link set eth3 up
+        - ip link set eth1 master br0
+        - ip link set eth2 master br0
+        - ip link set eth3 master br0
+        - ip link set br0 up
+
   links:
     # Firewall (CE + NAT) → COR-01 / AS-R1
     - endpoints: ["ENT-SITE-PRIM-FIREWALL:eth2", "AS-R1:eth1"]
@@ -397,7 +410,7 @@ topology:
     - endpoints: ["ENT-SITE-PRIM-SW-DESKOFFICE:eth4", "ENT-SITE-PRIM-CLIENT-PHONE-02:eth1"]
 
     # Site secondaire → AS-R1 eth4
-    - endpoints: ["ENT-SITE-SECO-FIREWALL:eth2", "AS-R1:eth4"]
+    - endpoints: ["ENT-SITE-SECO-FIREWALL:eth2", "AS-R1:eth4"] # lien a supprimer si on se connecte via l'as de Flavien
     - endpoints: ["ENT-SITE-SECO-FIREWALL:eth1", "ENT-SITE-SECO-COR-01:eth1"]
 
     # COR-01 → équipements directement (VLAN20: eth2=DHCP, eth4=PC / VLAN30: eth3=DHCP)
@@ -412,9 +425,11 @@ topology:
     - endpoints: ["AS-R3:eth3", "AS-SW-SERVERS:eth1"]
     - endpoints: ["AS-SW-SERVERS:eth2", "AS-SRV-DNS:eth1"]
     - endpoints: ["AS-SW-SERVERS:eth3", "AS-SRV-DHCP:eth1"]
-    - endpoints: ["AS-R2:eth3", "PARTICULIER-ENT:eth1"]
+    - endpoints: ["AS-R2:eth3", "AS-SW-PUBLIC:eth1"]
+    - endpoints: ["AS-SW-PUBLIC:eth2", "PARTICULIER-ENT:eth1"]
 
     #ports externes
-    # - endpoints: ["AS-R2:eth4","macvlan:enp1s0f1"] # particulier
+    # - endpoints: ["AS-SW-PUBLIC:eth3","macvlan:enp1s0f1"] # particulier
     # - endpoints: ["AS-R3:eth4","macvlan:enp1s0f2"] # bgp
-    # - endpoints: ["ENT-SITE-SECO-FIREWALL:eth2","macvlan:enp1s0f3"] # site secondaire
+    # - endpoints: ["ENT-SITE-SECO-FIREWALL:eth2","macvlan:enp1s0f3"] # site secondaire groupe 0
+    # - endpoints: ["AS-R1:eth4","macvlan:enp1s0f4"] # site secondaire groupe 3
