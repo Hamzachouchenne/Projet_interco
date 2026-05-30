@@ -429,7 +429,7 @@ topology:
     - endpoints: ["AS-SW-PUBLIC:eth2", "PARTICULIER-ENT:eth1"]
 
     #ports externes
-    # - endpoints: ["AS-SW-PUBLIC:eth3","macvlan:enp1s0f1"] # particulier
-    # - endpoints: ["AS-R3:eth4","macvlan:enp1s0f2"] # bgp
-    # - endpoints: ["ENT-SITE-SECO-FIREWALL:eth2","macvlan:enp1s0f3"] # site secondaire groupe 0
-    # - endpoints: ["AS-R1:eth4","macvlan:enp1s0f4"] # site secondaire groupe 3
+    # - endpoints: ["AS-R3:eth4","macvlan:enp1s0f0"] # bgp
+    # - endpoints: ["AS-SW-PUBLIC:eth3","macvlan:enp1s0f1"] # particulier groupe 2
+    # - endpoints: ["ENT-SITE-SECO-FIREWALL:eth2","macvlan:enp1s0f2"] # site secondaire groupe 0
+    # - endpoints: ["AS-R1:eth4","macvlan:enp1s0f3"] # site secondaire groupe 3

@@ -27,10 +27,10 @@
       }
     },
     {
-      "id": "SRV-VOIP",
+      "id": "AS-SW-PUBLIC",
       "position": {
-        "x": 400,
-        "y": 180
+        "x": 760,
+        "y": 580
       }
     },
     {
@@ -134,8 +134,8 @@
     {
       "id": "PARTICULIER-ENT",
       "position": {
-        "x": 760,
-        "y": 600
+        "x": 840,
+        "y": 680
       }
     },
     {

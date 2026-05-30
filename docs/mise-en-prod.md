@@ -95,13 +95,13 @@ ip link show
 ### Décommenter et adapter les endpoints dans `topology.yml`
 
 ```yaml
-#ports externes
-- endpoints: ["AS-R1:eth4", "macvlan:enp1s0f0"]  # côté entreprise
-- endpoints: ["AS-R2:eth4", "macvlan:enp1s0f1"]  # côté particulier/public
-- endpoints: ["AS-R3:eth4", "macvlan:enp1s0f2"]  # peering BGP
+    - endpoints: ["AS-R3:eth4","macvlan:enp1s0f0"] # bgp
+    - endpoints: ["AS-SW-PUBLIC:eth3","macvlan:enp1s0f1"] # particulier
+    - endpoints: ["ENT-SITE-SECO-FIREWALL:eth2","macvlan:enp1s0f2"] # site secondaire groupe 0
+    - endpoints: ["AS-R1:eth4","macvlan:enp1s0f3"] # site secondaire groupe 3
 ```
 
-> Remplacer `enp1s0f0`, `enp1s0f1`, `enp1s0f2` par les noms réels des interfaces sur la machine.
+> Remplacer `enp1s0f0`, `enp1s0f1`, `enp1s0f2`, `enp1s0f3` par les noms réels des interfaces sur la machine.
 
 ### S'assurer que les interfaces sont UP
 
@@ -109,6 +109,7 @@ ip link show
 sudo ip link set enp1s0f0 up
 sudo ip link set enp1s0f1 up
 sudo ip link set enp1s0f2 up
+sudo ip link set enp1s0f3 up
 ```
 
 ---
