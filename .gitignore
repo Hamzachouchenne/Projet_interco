@@ -1,2 +1,17 @@
 
 **/.tls
+
+**/.tls
+*.bak
+.containerlab/
+.DS_Store
+Thumbs.db
+
+
+clab-*/*
+
+*.bak
+.containerlab/
+
+.DS_Store
+Thumbs.db

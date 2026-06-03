@@ -6,31 +6,31 @@
   "networkNodeAnnotations": [],
   "nodeAnnotations": [
     {
-      "id": "ENT-FIREWALL",
+      "id": "ENT-SITE-PRIM-SRV-DNS",
       "position": {
-        "x": 260,
-        "y": 360
+        "x": 280,
+        "y": 520
       }
     },
     {
-      "id": "ENT-COR-01",
+      "id": "ENT-SITE-SECO-FIREWALL",
       "position": {
-        "x": 420,
-        "y": 360
+        "x": 460,
+        "y": 240
       }
     },
     {
-      "id": "SRV-WEB",
+      "id": "AS-SRV-DHCP",
       "position": {
-        "x": 540,
-        "y": 460
+        "x": 820,
+        "y": 100
       }
     },
     {
-      "id": "SRV-VOIP",
+      "id": "AS-SW-PUBLIC",
       "position": {
-        "x": 400,
-        "y": 180
+        "x": 760,
+        "y": 580
       }
     },
     {
@@ -52,6 +52,167 @@
       "position": {
         "x": 580,
         "y": 340
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-FIREWALL",
+      "position": {
+        "x": 280,
+        "y": 380
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-COR-01",
+      "position": {
+        "x": 140,
+        "y": 380
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-SRV-WEB",
+      "position": {
+        "x": 0,
+        "y": 660
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-SRV-VOIP",
+      "position": {
+        "x": 0,
+        "y": 520
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-CLIENT-PC-01",
+      "position": {
+        "x": 0,
+        "y": 260
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-CLIENT-PHONE-01",
+      "position": {
+        "x": -140,
+        "y": 260
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-CLIENT-PHONE-02",
+      "position": {
+        "x": -140,
+        "y": 380
+      }
+    },
+    {
+      "id": "AS-R1",
+      "position": {
+        "x": 620,
+        "y": 380
+      }
+    },
+    {
+      "id": "AS-R2",
+      "position": {
+        "x": 760,
+        "y": 460
+      }
+    },
+    {
+      "id": "AS-R3",
+      "position": {
+        "x": 760,
+        "y": 320
+      }
+    },
+    {
+      "id": "AS-SRV-DNS",
+      "position": {
+        "x": 700,
+        "y": 100
+      }
+    },
+    {
+      "id": "PARTICULIER-ENT",
+      "position": {
+        "x": 840,
+        "y": 680
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-SRV-DHCP",
+      "position": {
+        "x": 280,
+        "y": 660
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-SW-DATACENTER",
+      "position": {
+        "x": 140,
+        "y": 520
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-SRV-LDAP",
+      "position": {
+        "x": 200,
+        "y": 760
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-SW-SERVEURS",
+      "position": {
+        "x": 140,
+        "y": 540
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-SW-DESKOFFICE",
+      "position": {
+        "x": 0,
+        "y": 380
+      }
+    },
+    {
+      "id": "ENT-SITE-PRIM-SRV-LDAP-UI",
+      "position": {
+        "x": 80,
+        "y": 760
+      }
+    },
+    {
+      "id": "ENT-SITE-SECO-CLIENT-PC-01",
+      "position": {
+        "x": 360,
+        "y": 40
+      }
+    },
+    {
+      "id": "ENT-SITE-SECO-SRV-DHCP",
+      "position": {
+        "x": 220,
+        "y": 160
+      }
+    },
+    {
+      "id": "ENT-SITE-SECO-SW-01",
+      "position": {
+        "x": 360,
+        "y": 40
+      }
+    },
+    {
+      "id": "ENT-SITE-SECO-COR-01",
+      "position": {
+        "x": 360,
+        "y": 160
+      }
+    },
+    {
+      "id": "AS-SW-SERVERS",
+      "position": {
+        "x": 760,
+        "y": 200
       }
     }
   ],

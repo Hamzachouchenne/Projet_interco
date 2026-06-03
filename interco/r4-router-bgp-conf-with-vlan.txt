@@ -1,0 +1,87 @@
+enable
+configure terminal
+
+! -- HOSTNAME ET DOMAIN NAME --
+hostname R4
+ip domain-name as10.enseeiht.local
+
+! -- INTERFACES --
+! Loopback 0 (Interne)
+interface Loopback0
+ ip address 120.0.15.4 255.255.255.255
+ no shutdown
+ exit
+
+! Loopback 1 (eBGP)
+interface Loopback1
+ ip address 10.0.0.10 255.255.255.255
+ no shutdown
+ exit
+
+! Vers AS-11-12 (Externe)
+interface GigabitEthernet0/0
+ no ip address
+ no shutdown
+ exit
+
+! Sous-interface VLAN 1011 (Vers AS 11)
+interface GigabitEthernet0/0.1011
+ encapsulation dot1Q 1011
+ ip address 10.0.1.10 255.255.255.0
+ no shutdown
+ exit
+
+! Sous-interface VLAN 1012 (Vers AS 12)
+interface GigabitEthernet0/0.1012
+ encapsulation dot1Q 1012
+ ip address 10.0.2.10 255.255.255.0
+ no shutdown
+ exit
+
+! Vers R3 (Interne)
+interface GigabitEthernet0/1
+ ip address 120.0.0.14 255.255.255.252
+ ip ospf network point-to-point
+ no shutdown
+ exit
+
+
+! -- ROUTAGE INTERNE (OSPF) --
+router ospf 10
+ router-id 120.0.15.4
+ network 120.0.15.4 0.0.0.0 area 0
+ network 120.0.0.12 0.0.0.3 area 0
+ redistribute bgp 10 subnets
+ exit
+
+! -- FIX BGP WITH OSPF --
+ip route 120.0.0.0 255.255.240.0 Null0
+
+! -- ROUTES STATIQUES LOOPBACKS AS 11 12 --
+! AS 11 (10.0.0.11) -> VLAN 1011
+ip route 10.0.0.11 255.255.255.255 10.0.1.11
+! AS 12 (10.0.0.12) -> VLAN 1012
+ip route 10.0.0.12 255.255.255.255 10.0.2.12
+
+
+! -- ROUTAGE EXTERNE (eBGP) --
+router bgp 10
+ ! Identité BGP
+ bgp router-id 120.0.15.4
+
+ ! Remote AS 11
+ neighbor 10.0.0.11 remote-as 11
+ neighbor 10.0.0.11 update-source Loopback1
+ neighbor 10.0.0.11 ebgp-multihop 2
+
+ ! Remote AS 12
+ neighbor 10.0.0.12 remote-as 12
+ neighbor 10.0.0.12 update-source Loopback1
+ neighbor 10.0.0.12 ebgp-multihop 2
+
+ ! Annoncer notre bloc réseau public
+ network 120.0.0.0 mask 255.255.240.0
+ exit
+
+end
+write memory

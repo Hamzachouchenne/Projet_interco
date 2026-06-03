@@ -1,0 +1,21 @@
+enable
+configure terminal
+
+
+! -- SSH --
+! Génération de la clé 2048 bits pour SSH
+crypto key generate rsa
+
+! Création de ton accès admin
+username as10 privilege 15 secret as10password
+ip ssh version 2
+
+! Configuration des lignes virtuelles
+line vty 0 4
+ login local
+ transport input ssh
+ exit
+
+
+end
+write memory
