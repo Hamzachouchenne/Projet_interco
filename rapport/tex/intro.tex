@@ -1,0 +1,14 @@
+\section{Introduction}
+
+Ce rapport présente la conception et le déploiement d'une architecture réseau multi-site réalisés dans le cadre du module d'Architecture Réseaux. 
+L'objectif du projet est de mettre en place une infrastructure réseau complète, allant du routage jusqu'au déploiement des différents services systèmes.\\
+
+L'infrastructure a été déployée dans un environnement virtualisé basé sur Docker et Containerlab. Cette solution permet de simuler des équipements réseau Cisco ainsi que plusieurs services exécutés dans des conteneurs, tout en conservant un fonctionnement proche d'une architecture réelle.\\
+
+Une première partie du travail concerne l'administration du Système Autonome 10 (AS 10), utilisé comme fournisseur d'accès. Cela comprend la configuration du routage interne ainsi que la mise en place des sessions BGP permettant l'interconnexion avec les autres systèmes autonomes de la topologie.\\
+
+Le projet comprend également la gestion du réseau de l'Entreprise 0, réparti sur deux sites distincts. Plusieurs éléments ont été mis en place, notamment le plan d'adressage, le routage inter-VLAN et la sécurisation des communications entre les deux sites à l'aide d'un tunnel VPN OpenVPN.\\
+
+Différents services ont aussi été déployés sur le site principal à l'aide de conteneurs Docker, parmi lesquels un serveur DNS, un serveur Web, un serveur LDAP ainsi qu'un serveur de téléphonie IP basé sur Asterisk.\\
+
+Enfin, ce rapport présente les choix techniques réalisés, les configurations mises en œuvre sur les équipements et les services, ainsi que les différents tests effectués pour vérifier le bon fonctionnement de l'infrastructure.

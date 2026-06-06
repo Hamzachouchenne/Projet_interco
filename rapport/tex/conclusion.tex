@@ -1,0 +1,20 @@
+\section{Discussion et bilan}
+
+\subsection{Retour d'expérience et gestion des obstacles}
+La réalisation de ce projet d'architecture réseau a été l'occasion de mettre en pratique l'ensemble des connaissances théoriques abordées en cours. Au-delà des aspects techniques, ce travail a mis en lumière la complexité inhérente à la gestion d'un réseau multi-sites.
+
+L'architecture a dû évoluer en permanence pour répondre aux imprévus techniques. Parmi les difficultés rencontrées, la virtualisation via Containerlab a nécessité une phase d'adaptation importante, notamment pour stabiliser les interconnexions entre les conteneurs et les nœuds Arista cEOS. De plus, les contraintes matérielles liées aux ressources limitées des équipements disponibles en salle de travaux dirigés nous ont imposé des optimisations constantes de la topologie pour maintenir une performance acceptable.
+
+Ces problèmes de virtualisation, conjugués à la complexité du routage BGP, ont constitué un défi majeur qui a exigé une grande rigueur dans le debug et une communication fluide au sein du groupe pour coordonner les modifications sur le backbone.
+
+\subsection{Apports et perspectives}
+Ce projet a permis de renforcer nos compétences en administration système et réseau, particulièrement sur la gestion des services critiques (LDAP, VoIP, DNS) et la sécurisation par filtrage iptables. L'approche par le "pratique" nous a permis de mieux appréhender les comportements dynamiques des protocoles OSPF et BGP en conditions réelles.
+
+Si cette infrastructure est aujourd'hui fonctionnelle, plusieurs axes d'amélioration pourraient être envisagés pour une exploitation en environnement de production :
+\begin{itemize}
+    \item Haute disponibilité : Mise en place de protocoles de redondance de passerelle (ex: VRRP) sur le cœur de réseau pour pallier une éventuelle défaillance du nœud COR-01
+    \item Sécurisation renforcée : Intégration d'un pare-feu de bordure avec inspection profonde des paquets (DPI) pour le trafic Internet
+    \item Automatisation : Utilisation d'outils de gestion de configuration type Ansible pour déployer les services de manière encore plus rapide et reproductible
+\end{itemize}
+
+En conclusion, ce projet a été une expérience formatrice, tant sur le plan technique que méthodologique, nous préparant efficacement aux réalités du métier d'ingénieur réseau.
