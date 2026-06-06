@@ -2,18 +2,8 @@
 
 \documentclass{rapport}
 
-% Language setting
-% Replace `english' with e.g. `spanish' to change the document language
-\usepackage[french]{babel}
+% babel, fontenc et graphicx sont déjà chargés par rapport.cls
 \usepackage{csquotes}
-\usepackage[T1]{fontenc}
-
-% Required for inserting images
-\usepackage{graphicx}
-
-% Set page size and margins
-% Replace `letterpaper' with `a4paper' for UK/EU standard size
-% \usepackage[a4paper,top=2cm,bottom=2cm,left=2cm,right=2cm,marginparwidth=1.75cm]{geometry}
 
 % define code insert style
 \usepackage{listings}
@@ -25,21 +15,21 @@
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 \lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
+    backgroundcolor=\color{backcolour},
     commentstyle=\color{codegreen},
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
     basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
     showstringspaces=false,
-    showtabs=false,                  
+    showtabs=false,
     tabsize=2
 }
 \lstset{style=mystyle}
@@ -85,10 +75,10 @@ Julien Fasson} \\
         Arthur \textsc{Lévi} \\
         Emma \textsc{Pouydebat}
         } %Nom des élèves
-		
+
 
 %----------- Initialisation -------------------
-        
+
 \fairemarges% Afficher les marges
 \fairepagedegarde% Créer la page de garde
 \tabledematieres% Créer la table de matières

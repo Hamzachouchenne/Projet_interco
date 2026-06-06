@@ -2,7 +2,7 @@
 
 %--------------------- Packages ------------------------
 
-\RequirePackage[french]{babel} %Langue du document
+\RequirePackage[french, provide=*]{babel} %Langue du document
 \RequirePackage[utf8]{inputenc} %Caractères spéciaux
 \RequirePackage[section]{placeins}%Pour placement de section
 \RequirePackage[T1]{fontenc} %Quelques lettres qui sont pas inclus dans UTF-8
@@ -42,7 +42,7 @@
 \lhead{\includegraphics[scale=0.15]{\logo}} %Affichage de l'image au top de la page
 \rhead{\nouppercase{\leftmark}}
 \rfoot{\thepage}
-\cfoot{Rapport - \textbf{\titre}}
+\cfoot{\textbf{Rapport - \titre}}
 \lfoot{\cours}
 }
 

@@ -1,9 +1,9 @@
-\section{Les réseaux d’entreprise}
-\subsection{Mise en œuvre du site principal de l’entreprise}
+\section{Les réseaux d'entreprise}
+\subsection{Mise en œuvre du site principal de l'entreprise}
 
 \subsubsection{Mise en place du réseau et du service d'adressage dynamique}
 
-L'architecture du site principal est déployée via des conteneurs (sous Containerlab) simulant les équipements réseau. Le routage inter-VLAN est assuré par un nœud Linux faisant office de cœur de réseau (\texttt{ENT-SITE-PRIM-COR-01}), qui segmente logiquement le trafic selon le plan d'adressage suivant :
+L'architecture du site principal est déployée via des conteneurs sous Containerlab. Le routage inter-VLAN est assuré par un nœud Linux faisant office de cœur de réseau (COR-01), qui segmente le trafic selon le plan d'adressage suivant :
 
 \begin{table}[ht!]
     \centering
@@ -23,39 +23,38 @@ L'architecture du site principal est déployée via des conteneurs (sous Contain
     \label{tab:plan_adressage}
 \end{table}
 
-L'adressage dynamique des clients et des téléphones repose sur un serveur DHCP sous \texttt{dnsmasq}. Plutôt que de configurer un agent de relais sur le routeur, le choix architectural a été de doter le serveur DHCP de deux interfaces réseau (\texttt{eth1} et \texttt{eth2}), le connectant ainsi directement aux domaines de diffusion des VLANs 20 et 30. Le serveur distribue les plages d'adresses (.10 à .50) ainsi que l'adresse du serveur DNS interne (192.168.10.11).
+L'adressage dynamique des clients et des téléphones est géré par un serveur DHCP avec dnsmasq. Plutôt que d'utiliser un agent de relais sur le routeur, nous avons choisi de connecter le serveur DHCP directement aux deux VLANs concernés grâce à deux interfaces réseau séparées. Le serveur distribue les adresses dans la plage .10 à .50, ainsi que l'adresse du serveur DNS interne (192.168.10.11).
 
 \subsubsection{Mise en place d'une sécurité d'accès au réseau en interne et QoS}
 
-La sécurité interne du réseau est assurée directement sur le cœur de réseau Linux (\texttt{COR-01}) à l’aide du pare-feu \texttt{iptables}.
+La sécurité interne du réseau est gérée directement sur le cœur de réseau COR-01 via iptables.
 
-Pour restreindre les communications non autorisées entre les différents VLANs, la politique par défaut de la chaîne \texttt{FORWARD} est configurée en rejet (\texttt{iptables -P FORWARD DROP}). Des règles spécifiques sont ensuite ajoutées en fonction des besoins des équipements.\\
+Par défaut, tout le trafic qui transite entre les VLANs est bloqué. Des règles sont ensuite ajoutées pour n'autoriser que les flux nécessaires.\\
 
 \begin{itemize}
-    \item \textbf{Depuis le VLAN 20 (Clients) :} les utilisateurs peuvent uniquement accéder au serveur Web via HTTP (TCP/80) et HTTPS (TCP/443). Les requêtes DNS (UDP/TCP 53) sont également autorisées pour permettre la résolution de noms.
-
-    \item \textbf{Depuis le VLAN 30 (Téléphonie) :} seuls les flux nécessaires au fonctionnement de la VoIP sont autorisés vers le serveur Asterisk, notamment le DNS, le protocole SIP (TCP/UDP 5060-5061) ainsi que les flux RTP (UDP 16384:32767). Les règles autorisent également les flux retour du serveur vers les téléphones pour permettre l’établissement correct des communications.\\
+    \item Depuis le VLAN 20 (Clients) : les utilisateurs peuvent accéder au serveur Web en HTTP (TCP/80) et HTTPS (TCP/443). Les requêtes DNS (UDP/TCP 53) sont également autorisées pour la résolution de noms.
+    \item Depuis le VLAN 30 (Téléphonie) : seuls les flux nécessaires à la VoIP sont autorisés vers le serveur Asterisk : DNS, SIP (TCP/UDP 5060-5061) et RTP (UDP 16384:32767). Les flux retour du serveur vers les téléphones sont aussi autorisés pour permettre l'établissement des appels.\\
 \end{itemize}
 
 \newpage
-Pour garantir une bonne qualité audio lors des appels, un mécanisme de qualité de service (QoS) a également été mis en place. Le trafic VoIP (SIP et RTP) provenant du VLAN 30 est marqué dans la table \texttt{mangle} avec le champ DSCP EF (Expedited Forwarding, valeur 46), ce qui permet de prioriser ces paquets sur le réseau.
+Pour garantir une bonne qualité audio lors des appels, un mécanisme de QoS a aussi été configuré. Le trafic VoIP provenant du VLAN 30 est marqué avec le champ DSCP EF (valeur 46) dans la table mangle, ce qui permet de prioriser ces paquets sur le réseau.
 
 \subsubsection{Mise en place d'une gestion des utilisateurs}
 
-La gestion des comptes utilisateurs et la sécurisation de l'accès aux différents services de l'entreprise ont été centralisées via le déploiement d'un annuaire LDAP au sein de l'infrastructure.
+La gestion des comptes utilisateurs et la sécurisation des accès ont été centralisées grâce à un annuaire LDAP.
 
-Son déploiement a été automatisé pour en simplifier l'initialisation et permet de garantir une configuration cohérente. Lors du démarrage du conteneur, une structure par défaut est automatiquement créée avec plusieurs groupes d’utilisateurs correspondant aux différents niveaux d’accès définis dans le projet.
+L'annuaire est initialisé automatiquement au démarrage du conteneur avec une structure de base comprenant deux groupes d'utilisateurs :
 
 \begin{itemize}
-    \item \textbf{Groupe \texttt{vpn-users} :} ce groupe rassemble les utilisateurs autorisés à se connecter à distance au réseau de l’entreprise via le VPN. L’autorisation est matérialisée par l’attribut \texttt{title=vpn-user} sur chaque compte, qui est contrôlé lors de l’authentification OpenVPN.
-    \item \textbf{Groupe \texttt{tech} :} il contient l’ensemble des employés, y compris ceux disposant d’un accès VPN, permettant de gérer les droits d’accès internes aux services du réseau.
+    \item Groupe vpn-users : ce groupe contient les utilisateurs autorisés à se connecter à distance via le VPN. En pratique, l'accès VPN est accordé aux comptes ayant l'attribut title=vpn-user dans l'annuaire, vérifié à chaque tentative de connexion.
+    \item Groupe tech : ce groupe rassemble l'ensemble des employés de l'entreprise et sert à gérer les accès aux ressources internes du réseau.
 \end{itemize}
 
-La validation de cette gestion des droits a été réalisée en créant plusieurs comptes de test. Ces essais ont permis de confirmer que l’accès au portail VPN dépend bien de l’appartenance au groupe « User VPN ».
+Plusieurs comptes de test ont été créés pour valider le fonctionnement. Ces tests ont confirmé que seuls les comptes avec l'attribut title=vpn-user peuvent établir une connexion VPN.
 
-Enfin, une interface web d’administration a été mise en place pour faciliter la gestion quotidienne de l'annuaire. Celle-ci permet notamment d'ajouter ou supprimer des utilisateurs, modifier certains attributs ou encore réinitialiser des mots de passe sans passer par la ligne de commande.
+Une interface web d'administration a aussi été déployée pour faciliter la gestion quotidienne de l'annuaire. Elle permet d'ajouter ou supprimer des utilisateurs, de modifier leurs attributs ou de réinitialiser des mots de passe sans passer par la ligne de commande.
 
-Les figures ci-dessous illustrent la structuration de l'annuaire (Figure \ref{fig:ldap_arbo}), la configuration détaillée des comptes utilisateurs (Figure \ref{fig:ldap_user}) et la gestion dynamique des appartenances aux groupes (Figure \ref{fig:ldap_group}). Cette démonstration confirme la capacité de l'annuaire à supporter une gestion fine des droits d'accès.
+Les figures ci-dessous montrent l'arborescence de l'annuaire (Figure \ref{fig:ldap_arbo}), un exemple de création de compte (Figure \ref{fig:ldap_user}) et l'ajout d'un utilisateur à un groupe (Figure \ref{fig:ldap_group}).
 
 \begin{figure}[ht!]
     \centering
@@ -77,12 +76,12 @@ Les figures ci-dessous illustrent la structuration de l'annuaire (Figure \ref{fi
 \end{figure}
 
 \newpage
-\subsubsection{Mise en place du DNS de l’entreprise}
+\subsubsection{Mise en place du DNS de l'entreprise}
 
-La résolution de noms interne et le relais vers l’extérieur reposent sur un service DNS BIND9. Le serveur principal est hébergé dans le VLAN 10 du Datacenter à l’adresse 192.168.10.11. Il est configuré pour gérer la zone de l'entreprise \texttt{entreprise.lab}.
+La résolution de noms interne et le relais vers l'extérieur reposent sur un serveur DNS BIND9. Ce serveur est hébergé dans le VLAN 10 du Datacenter à l'adresse 192.168.10.11 et gère la zone entreprise.lab.
 
-\paragraph{Déclaration des paramètres globaux et des zones — \texttt{/etc/bind/named.conf}}
-Le fichier de configuration principal (cf Listing \ref{code:bind}) définit les règles de requêtage, active la récursivité et met en place un \textit{forwarder} pointant vers le serveur DNS de l'opérateur (AS 10) pour gérer les requêtes externes à l'entreprise.
+\paragraph{Paramètres globaux et zones — \texttt{named.conf}}
+Le fichier de configuration principal (cf Listing \ref{code:bind}) définit les options d'écoute et de récursivité, et configure un forwarder pointant vers le serveur DNS de l'opérateur (AS 10) pour les requêtes extérieures à l'entreprise.
 
 \begin{lstlisting}[language=C, float=h, caption={/etc/bind/named.conf}, label={code:bind}]
 options {
@@ -103,7 +102,7 @@ zone "entreprise.lab" IN {
 
 \newpage
 \paragraph{Fichier de zone direct — \texttt{/etc/bind/db.entreprise.lab}}
-Ce fichier (cf. Listing \ref{code:bind2}) cartographie les équipements critiques de notre infrastructure en associant les noms d'hôtes aux adresses IP statiques de nos serveurs et du point d'accès externe.
+Ce fichier (cf. Listing \ref{code:bind2}) associe les noms de domaine aux adresses IP des différents serveurs de l'infrastructure.
 
 \begin{lstlisting}[language=DNSZone, float=h, caption={/etc/bind/db.entreprise.lab}, label={code:bind2}]
 $TTL 86400
@@ -126,46 +125,46 @@ ldap-ui  IN  A   192.168.10.21
 
 \subsubsection{Mise en place d'un service de VoIP}
 
-Pour répondre aux besoins de communication interne, un service de téléphonie sur IP (VoIP) a été intégré à l'architecture. La solution s'articule autour d'un autocommutateur téléphonique privé basé sur \textbf{Asterisk}, centralisé au sein du Datacenter (VLAN 10) à l'adresse 192.168.10.12. Le choix de la pile de protocoles \texttt{PJSIP} garantit une gestion moderne et sécurisée de la signalisation et des terminaux.
+Pour répondre aux besoins de communication interne, un serveur Asterisk a été déployé dans le Datacenter (VLAN 10) à l'adresse 192.168.10.12, en utilisant le protocole PJSIP pour la gestion des appels.
 
-Côté utilisateurs, deux terminaux logiciels (softphones basés sur \texttt{baresip}) ont été déployés. Ils sont placés dans le VLAN 30, segment réseau spécifiquement dédié aux flux de téléphonie.
+Du côté des utilisateurs, deux softphones basés sur baresip ont été déployés dans le VLAN 30, dédié à la téléphonie.
 
-La mise en œuvre du service s'est déroulée en trois étapes logiques :
+La mise en place du service s'est déroulée en trois étapes :
 \begin{itemize}
-    \item \textbf{Configuration des terminaux et authentification :} Chaque téléphone (PHONE-01 et PHONE-02) a été provisionné avec un compte SIP unique (extensions 100 et 200) et un mot de passe dédié pour s'authentifier auprès du serveur central.
-    \item \textbf{Déclaration des points de terminaison sur le serveur :} Les téléphones ont été déclarés dans la configuration d'Asterisk en tant que \textit{endpoints} communiquant via le protocole UDP. Pour garantir la qualité et la compatibilité des flux vocaux, seuls les codecs audio standards G.711 (\texttt{alaw, ulaw}) ont été autorisés.
-    \item \textbf{Mise en place du plan de numérotation (\textit{Dialplan}) :} Un contexte de routage interne a été défini sur le serveur. Il dicte la logique d'acheminement des appels : lorsqu'un utilisateur compose le numéro d'une extension, le serveur identifie le canal PJSIP correspondant et établit la mise en relation entre les deux postes téléphoniques.
+    \item Configuration des téléphones : chaque softphone (PHONE-01 et PHONE-02) a été configuré avec un numéro SIP (100 et 200) et un mot de passe pour s'authentifier sur le serveur Asterisk.
+    \item Configuration du serveur Asterisk : les deux téléphones ont été déclarés comme endpoints PJSIP en UDP. Seuls les codecs G.711 (alaw et ulaw) ont été autorisés pour assurer la compatibilité des appels.
+    \item Plan de numérotation : un dialplan a été configuré sur Asterisk. Lorsqu'un utilisateur compose une extension, le serveur route l'appel vers le bon téléphone via PJSIP.
 \end{itemize}
 
 \subsubsection{Mise en place d'un service applicatif supplémentaire : Serveur Web}
 
-Un serveur Web Apache a été déployé dans le Datacenter, complétant ainsi l'infrastructure réseau avec un service applicatif supplémentaire.
+Un serveur Web Apache a été déployé dans le Datacenter pour compléter l'infrastructure avec un service applicatif.
 
-Dans le cadre du projet, ce serveur héberge une page HTML simple permettant de vérifier le bon fonctionnement des différents services réseau mis en place. Même s’il s’agit principalement d’une preuve de concept, il permet de valider plusieurs aspects importants de l’infrastructure :
+Dans le cadre du projet, ce serveur héberge une page HTML simple qui a servi de support de test pour valider plusieurs aspects de l'infrastructure :
 
 \begin{itemize}
-    \item \textbf{Validation de la résolution DNS :} l’accès au site via le nom de domaine \texttt{web.entreprise.lab} permet de vérifier que le serveur DNS Bind9 répond correctement aux requêtes.
+    \item Résolution DNS : accéder au serveur via le nom web.entreprise.lab permet de vérifier que le serveur DNS répond correctement aux requêtes.
 
-    \item \textbf{Validation du filtrage inter-VLAN :} ce serveur permet également de tester les règles de filtrage configurées sur le cœur de réseau avec \texttt{iptables}. Seuls les flux HTTP (TCP/80) et HTTPS (TCP/443) provenant du VLAN 20 (Clients) sont autorisés à accéder au serveur Web.
+    \item Filtrage inter-VLAN : le serveur permet aussi de tester les règles de filtrage configurées sur COR-01. Seul le trafic HTTP et HTTPS depuis le VLAN 20 est autorisé à l'atteindre.
 \end{itemize}
 
-Ce service a donc servi de support de test tout au long du projet pour vérifier le bon fonctionnement du routage, du DNS ainsi que des règles de sécurité mises en place entre les VLANs.
+Ce serveur a donc été utile tout au long du projet pour vérifier le bon fonctionnement du routage, du DNS et des règles de sécurité entre les VLANs.
 
 \newpage
 \subsection{Mise en œuvre du site secondaire et des accès distants}
 
 \subsubsection{Déploiement du site secondaire et du VPN inter-sites}
 
-Conformément aux exigences multi-sites du projet, un site d'entreprise secondaire a été intégré à l'architecture. Son infrastructure interne, bien que plus légère, reprend les mêmes principes de sécurité que le site principal, avec un réseau local protégé par un pare-feu de bordure.
+Dans le cadre du projet, un deuxième site a été intégré à l'architecture. Son infrastructure est plus légère que celle du site principal, mais reprend les mêmes principes de sécurité avec un pare-feu de bordure.
 
-Pour relier ces deux entités de manière sécurisée au travers de l'infrastructure de routage globale (via les Systèmes Autonomes), un tunnel VPN de type site-à-site a été mis en place. La technologie OpenVPN a été privilégiée pour l'établissement de ce lien. Ce tunnel chiffré relie directement le pare-feu du site principal à celui du site secondaire.
+Pour relier les deux sites de façon sécurisée via les Systèmes Autonomes, nous avons mis en place un tunnel VPN site-à-site avec OpenVPN entre les deux pare-feux.
 
-Grâce à cette implémentation et au routage configuré sur l'interface virtuelle du tunnel (\texttt{tun}), les machines du site secondaire peuvent accéder de manière transparente aux ressources centralisées du site principal (comme le serveur DNS ou la VoIP du Datacenter), comme si elles se trouvaient sur le même réseau local, tout en garantissant la confidentialité des échanges.
+Grâce au routage configuré sur l'interface tunnel, les machines du site secondaire peuvent accéder aux ressources du site principal (serveur DNS, VoIP...) de manière transparente, comme si elles se trouvaient sur le même réseau local, tout en garantissant le chiffrement des échanges.
 
 \subsubsection{Accès distant sécurisé pour un particulier}
 
-En complément de l'interconnexion inter-sites, il était demandé d'offrir un accès sécurisé au réseau d'entreprise pour un utilisateur externe (particulier nomade ou télétravailleur) situé en dehors de notre infrastructure locale.
+En plus du VPN inter-sites, nous avons configuré un accès distant pour les utilisateurs extérieurs, comme des télétravailleurs.
 
-Pour ce faire, le service OpenVPN du site principal a été configuré pour accepter également des connexions de type « client-à-site ». La sécurité logique de cet accès a été renforcée en couplant le VPN avec l'annuaire LDAP de l'entreprise présenté précédemment.
+Le serveur OpenVPN a été configuré pour accepter des connexions de type client-à-site en plus du tunnel inter-sites. L'accès est sécurisé en couplant l'authentification VPN avec l'annuaire LDAP.
 
-Lorsqu'un particulier lance sa connexion depuis sa machine externe, son authentification est vérifiée en direct via le plugin \texttt{openvpn-auth-ldap}. Seuls les comptes possédant l'attribut \texttt{title=vpn-user} dans l'annuaire sont autorisés à monter le tunnel (correspondant aux membres du groupe \texttt{vpn-users}). Une fois authentifié, l'utilisateur nomade se voit attribuer une adresse IP virtuelle interne. Il peut ainsi interagir avec les services du Datacenter avec les mêmes restrictions de sécurité (gérées par \texttt{iptables}) que s'il était physiquement présent dans les locaux de l'entreprise.
+Lors d'une tentative de connexion, les identifiants sont vérifiés auprès du LDAP via le plugin openvpn-auth-ldap. Seuls les comptes ayant l'attribut title=vpn-user dans l'annuaire peuvent se connecter, ce qui correspond aux membres du groupe vpn-users. Une fois authentifié, l'utilisateur reçoit une adresse IP virtuelle et peut accéder aux ressources du Datacenter, avec les mêmes règles de filtrage iptables que pour un accès depuis les locaux.
