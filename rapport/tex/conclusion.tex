@@ -1,0 +1,20 @@
+\section{Discussion et bilan}
+
+\subsection{Retour d'expérience et gestion des obstacles}
+La réalisation de ce projet a été une bonne occasion de mettre en pratique les connaissances théoriques abordées en cours. Ce travail nous a aussi montré à quel point la gestion d'un réseau multi-sites peut être complexe en conditions réelles.
+
+L'architecture a dû évoluer plusieurs fois face aux imprévus. Parmi les difficultés rencontrées, la virtualisation avec Containerlab a demandé une phase d'adaptation importante, notamment pour stabiliser les connexions entre les conteneurs et les nœuds Arista cEOS. Les ressources limitées des machines en salle de TD nous ont également obligés à optimiser régulièrement la topologie pour maintenir des performances correctes.
+
+La combinaison des problèmes de virtualisation et de la configuration BGP a demandé beaucoup de rigueur dans le débogage et une bonne communication au sein du groupe pour coordonner les changements sur le backbone.
+
+\subsection{Apports et perspectives}
+Ce projet nous a permis de progresser en administration système et réseau, notamment sur la configuration de services comme LDAP, la VoIP et le DNS, ainsi que sur la sécurisation par filtrage avec iptables. Travailler directement sur une infrastructure réelle nous a aussi aidés à mieux comprendre le comportement des protocoles OSPF et BGP.
+
+Si l'infrastructure est aujourd'hui fonctionnelle, plusieurs améliorations pourraient être envisagées pour un usage en production :
+\begin{itemize}
+    \item Haute disponibilité : mise en place d'un protocole de redondance de passerelle (VRRP par exemple) sur le cœur de réseau pour éviter qu'une panne de COR-01 ne coupe tout le trafic
+    \item Sécurisation renforcée : ajout d'un pare-feu de bordure avec inspection approfondie des paquets pour le trafic Internet
+    \item Automatisation : utilisation d'outils comme Ansible pour déployer les services de façon plus rapide et reproductible
+\end{itemize}
+
+En conclusion, ce projet a été une expérience enrichissante, aussi bien sur le plan technique que sur l'organisation du travail en groupe.

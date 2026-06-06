@@ -1,0 +1,110 @@
+%\documentclass{article}
+
+\documentclass{rapport}
+
+% babel, fontenc et graphicx sont déjà chargés par rapport.cls
+\usepackage{csquotes}
+
+% define code insert style
+\usepackage{listings}
+
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\lstdefinelanguage{DNSZone}{
+    morekeywords={IN, SOA, NS, A, CNAME, MX, TXT, TTL},
+    sensitive=true,
+    morecomment=[l]{;}, % Les commentaires commencent par un point-virgule
+    morestring=[b]",
+}
+
+% Création d'un equivalent à subsubsubsection qui s'appelle paragraph
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4}
+
+\titleformat{\paragraph}{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\usepackage{lipsum}
+
+\begin{document}
+
+%----------- Informations du rapport ---------
+
+\logo{image/logo-enseeiht.png}
+\unif{INP ENSEEIHT}
+\titre{Projet Architecture des Réseaux} %Titre du fichier .pdf
+\cours{Groupe 0} %Nom du cours
+\sujet{Création d'un réseau d'entreprise} %Nom du sujet
+
+\enseignant{\textsc{
+Julien Fasson} \\
+\textsc{Adrien Thibaud}} %Nom de l'enseignant
+
+
+\eleves{Hamza \textsc{Chouchenne} \\
+        Julien \textsc{Couderc} \\
+        Glenn \textsc{Fayolle} \\
+        Antoine \textsc{Gouzy} \\
+        Célian \textsc{Hache} \\
+        Dylan \textsc{Latapie} \\
+        Arthur \textsc{Lévi} \\
+        Emma \textsc{Pouydebat}
+        } %Nom des élèves
+
+
+%----------- Initialisation -------------------
+
+\fairemarges% Afficher les marges
+\fairepagedegarde% Créer la page de garde
+\tabledematieres% Créer la table de matières
+
+%----------- Contenu du rapport ----------------
+
+\newpage
+\listoffigures
+
+
+\newpage
+\input{tex/intro.tex}
+
+\newpage
+\input{tex/partie1}
+
+\newpage
+\input{tex/partie2}
+
+\newpage
+\input{tex/partie3}
+
+\newpage
+\input{tex/conclusion.tex}
+
+\newpage
+\input{tex/annexe}
+
+\end{document}

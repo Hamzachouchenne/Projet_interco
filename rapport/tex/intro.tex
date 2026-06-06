@@ -1,0 +1,13 @@
+\section{Introduction}
+
+Ce rapport présente le travail réalisé dans le cadre du projet d'Architecture des Réseaux. L'objectif était de concevoir et de déployer une infrastructure réseau complète, depuis la configuration du routage jusqu'à la mise en place de différents services.\\
+
+L'ensemble de l'infrastructure a été déployé dans un environnement virtualisé basé sur Docker et Containerlab. Cette approche nous a permis de simuler des équipements réseau Arista ainsi que plusieurs services dans des conteneurs, tout en reproduisant le comportement d'un réseau réel.\\
+
+Une première partie du travail concerne l'administration de l'AS 10, qui joue le rôle de fournisseur d'accès. Cela comprend la configuration du routage interne et la mise en place des sessions BGP pour l'interconnexion avec les autres systèmes autonomes de la topologie.\\
+
+Le projet comprend également la gestion du réseau de l'Entreprise 0, réparti sur deux sites distincts. Plusieurs éléments ont été mis en place : le plan d'adressage, le routage inter-VLAN et la sécurisation des communications entre les deux sites via un tunnel VPN OpenVPN.\\
+
+Différents services ont aussi été déployés sur le site principal à l'aide de conteneurs Docker, parmi lesquels un serveur DNS, un serveur Web, un serveur LDAP ainsi qu'un serveur de téléphonie IP basé sur Asterisk.\\
+
+Enfin, ce rapport détaille les choix techniques retenus, les configurations mises en place sur les équipements et les services, ainsi que les tests réalisés pour vérifier le bon fonctionnement de l'infrastructure.
