@@ -71,7 +71,7 @@ Les figures ci-dessous montrent l'arborescence de l'annuaire (Figure \ref{fig:ld
 \begin{figure}[ht!]
     \centering
     \includegraphics[width=0.7\textwidth]{image/ldap/Copie_decran_20260528_121708.png}
-    \caption{Association de l'utilisateur au groupe \textit{voip-users}}
+    \caption{Association de l'utilisateur au groupe \textit{vpn-users}}
     \label{fig:ldap_group}
 \end{figure}
 
@@ -156,6 +156,8 @@ Ce serveur a donc été utile tout au long du projet pour vérifier le bon fonct
 \subsubsection{Déploiement du site secondaire et du VPN inter-sites}
 
 Dans le cadre du projet, un deuxième site a été intégré à l'architecture. Son infrastructure est plus légère que celle du site principal, mais reprend les mêmes principes de sécurité avec un pare-feu de bordure.
+
+En interne, le site secondaire dispose de deux segments réseau : un VLAN Clients (192.168.60.0/24) et un VLAN Téléphonie (192.168.70.0/24). Un serveur DHCP distribue les adresses sur ces deux VLANs, et un poste client est connecté au segment Clients.
 
 Pour relier les deux sites de façon sécurisée via les Systèmes Autonomes, nous avons mis en place un tunnel VPN site-à-site avec OpenVPN entre les deux pare-feux.
 

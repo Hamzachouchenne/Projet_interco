@@ -3,11 +3,13 @@
 
 L'un des objectifs du projet était de réaliser une interconnexion avec les Systèmes Autonomes des autres groupes. Pour cela, nous avons déployé le protocole eBGP, nécessaire pour l'échange de routes entre domaines différents.\\
 
-Nous avons configuré notre routeur de bordure R4 pour établir des sessions BGP avec les AS voisins (AS 11, 12 et 13). Nous avons aussi mis en place une agrégation de routes pour annoncer un préfixe unique en /20 (120.0.0.0/20), avec une route statique vers Null0 pour éviter les boucles de routage. Les routes apprises en BGP ont ensuite été redistribuées dans OSPF afin que l'ensemble de notre AS puisse les utiliser.\\
+Nous avons configuré notre routeur de bordure R4 pour établir des sessions BGP avec les AS voisins (AS 11, 12 et 13). Pour optimiser les annonces, nous avons mis en place une agrégation de routes permettant de n'annoncer qu'un seul préfixe en /20 (120.0.0.0/20), sécurisé par une route statique vers Null0 pour éviter les boucles. Les routes apprises via BGP ont ensuite été redistribuées dans OSPF pour que l'ensemble des routeurs de notre AS puissent les utiliser.\\
 
-\begin{figure}[!ht]
+Côté connectivité physique, R4 s'est connecté aux routeurs de bordure des autres groupes via des sous-interfaces VLAN sur une interface partagée, ce qui a nécessité une coordination avec les autres groupes pour aligner les numéros de VLAN et les adresses IP de peering.\\
+
+\begin{figure}[ht!]
     \centering
-    \includegraphics[width=1\linewidth]{image/schema_archi/Schema Reseau Interconnexion.png}
+    \includegraphics[width=0.80\linewidth]{image/schema_archi/Schema Reseau Interconnexion.png}
     \caption{Schéma technique du réseau d'interconnexion}
     \label{fig:schema_technique_reseau_interco}
 \end{figure}
