@@ -17,9 +17,9 @@ clab-*/*
 Thumbs.db
 
 // tex files
-.aux
-.lof
-.log
-.nlo
-.out
-.toc
+*.aux
+*.lof
+*.log
+*.nlo
+*.out
+*.toc

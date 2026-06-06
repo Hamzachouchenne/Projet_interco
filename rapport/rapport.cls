@@ -13,8 +13,6 @@
 \RequirePackage[justification=centering]{caption} %Pour les légendes centralisées
 \RequirePackage{subcaption}
 \RequirePackage{wallpaper}
-\RequirePackage{nomencl}
-%\makenomenclature
 \RequirePackage{fancyhdr}
 %\pagestyle{fancy}
 %\fancyheadoffset{1cm}
@@ -35,7 +33,6 @@
 \newcommand{\unif}[1]{\renewcommand{\unif}{#1}}
 
 \newcommand{\fairemarges}{
-\makenomenclature
 \pagestyle{fancy}
 \fancyheadoffset{1cm}
 \setlength{\headheight}{2cm}
